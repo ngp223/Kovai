@@ -1,0 +1,1 @@
+translations = {'I login as an user': 'Me conecto como usuario', 'I click to gestion restaurantes': 'Hago clic para administrar restaurantes', 'I see gestion de restaurantes': 'Veo gestión de restaurantes.', 'I see menu lateral de restaurantes': 'Veo el menú lateral de restaurantes.', 'I manage restaurantes': 'Yo administro restaurantes'}

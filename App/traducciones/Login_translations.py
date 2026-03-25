@@ -1,0 +1,1 @@
+translations = {'I see the Login page': 'Veo la página de inicio de sesión', 'I login as an user': 'Me conecto como usuario', 'I try to login with wrong user': 'Intento iniciar sesión con el usuario equivocado', 'I try to login with wrong password': 'Intento iniciar sesión con contraseña incorrecta', 'I try to login without password': 'Intento iniciar sesión sin contraseña'}

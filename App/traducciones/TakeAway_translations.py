@@ -1,0 +1,1 @@
+translations = {'I click register to web': 'Hago clic en registrarme en la web', 'I accept cookies': 'Acepto cookies', 'I click header servicios': 'Hago clic en el encabezado servicios', 'I click to take away': 'hago clic para llevar', 'I see page take away': 'Veo que la página se quita', 'I request call': 'solicito llamada'}
