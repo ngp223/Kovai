@@ -1,8 +1,8 @@
-Feature: Login en app móvil Kova POS
+Feature: Login POS
 
-  Scenario: Login correcto
+  Scenario: Login y acceso a restaurante
+
     Given la app está abierta
-    When introduzco email "admin@demo.com"
-    And introduzco password "admin123"
-    And pulso activar terminal
+    When hago login con usuario "admin"
+    And selecciono el restaurante "tamusGV"
     Then entro en la app

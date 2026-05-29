@@ -1,66 +1,45 @@
 from behave import given, when, then
-from appium.webdriver.common.appiumby import AppiumBy
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from mobile.pages.login_page import LoginPage
+from mobile.pages.restaurant_page import RestaurantPage
+from mobile.data.users import USERS
+from mobile.data.restaurants import RESTAURANTS
 
 
 @given("la app está abierta")
 def step_impl(context):
-
-    wait = WebDriverWait(context.driver, 30)
-
-    # Esperar cualquier elemento del login estable
-    wait.until(
-        EC.presence_of_element_located(
-            (AppiumBy.ACCESSIBILITY_ID, "Activar Terminal")
-        )
-    )
+    assert context.driver is not None
 
 
-@when('introduzco email "{email}"')
-def step_impl(context, email):
+# -----------------------------
+# LOGIN
+# -----------------------------
+@when('hago login con usuario "{user}"')
+def step_impl(context, user):
 
-    wait = WebDriverWait(context.driver, 10)
+    credentials = USERS[user]
 
-    email_field = wait.until(
-        EC.presence_of_element_located(
-            (AppiumBy.XPATH, "(//android.widget.EditText)[1]")
-        )
-    )
+    login = LoginPage(context.driver)
 
-    email_field.clear()          # 👈 LIMPIA CAMPO
-    email_field.send_keys(email)
-
-
-@when('introduzco password "{password}"')
-def step_impl(context, password):
-
-    wait = WebDriverWait(context.driver, 10)
-
-    password_field = wait.until(
-        EC.presence_of_element_located(
-            (AppiumBy.XPATH, "(//android.widget.EditText)[2]")
-        )
-    )
-
-    password_field.clear()       # 👈 LIMPIA CAMPO
-    password_field.send_keys(password)
+    login.enter_email(credentials["email"])
+    login.enter_password(credentials["password"])
+    login.click_activate_terminal()
 
 
-@when("pulso activar terminal")
-def step_impl(context):
+# -----------------------------
+# RESTAURANTE
+# -----------------------------
+@when('selecciono el restaurante "{restaurant_key}"')
+def step_impl(context, restaurant_key):
 
-    wait = WebDriverWait(context.driver, 10)
+    restaurant_name = RESTAURANTS[restaurant_key]
 
-    button = wait.until(
-        EC.element_to_be_clickable(
-            (AppiumBy.XPATH, '//android.view.ViewGroup[@content-desc="Activar Terminal"]')
-        )
-    )
-
-    button.click()
+    restaurant_page = RestaurantPage(context.driver)
+    restaurant_page.select_restaurant(restaurant_name)
 
 
+# -----------------------------
+# ASSERT
+# -----------------------------
 @then("entro en la app")
 def step_impl(context):
     assert context.driver is not None
