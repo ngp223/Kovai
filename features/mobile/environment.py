@@ -6,10 +6,6 @@ from datetime import datetime
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 
-
-# -----------------------------
-# PYTHONPATH (imports del proyecto)
-# -----------------------------
 root_path = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..")
 )
@@ -17,10 +13,6 @@ root_path = os.path.abspath(
 if root_path not in sys.path:
     sys.path.insert(0, root_path)
 
-
-# -----------------------------
-# BEFORE ALL (Appium start)
-# -----------------------------
 def before_all(context):
 
     options = UiAutomator2Options()
@@ -42,10 +34,6 @@ def before_all(context):
 
     context.driver.implicitly_wait(10)
 
-
-# -----------------------------
-# AFTER STEP (logs + screenshots)
-# -----------------------------
 def after_step(context, step):
 
     print("STEP:", step.name, "STATUS:", step.status)
@@ -75,11 +63,8 @@ def after_step(context, step):
             context.driver.save_screenshot(path)
             print(f"\n📸 Screenshot guardado: {path}")
 
-
-# -----------------------------
-# AFTER ALL (close driver)
-# -----------------------------
 def after_all(context):
 
     if context.driver:
         context.driver.quit()
+        
