@@ -1,30 +1,13 @@
-from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-
 class CashClosurePage:
 
-    CASH_CLOSURE_BUTTON = (
-        'xpath',
-        '//android.view.ViewGroup[@content-desc=", Cierre de Caja"]')
-
-    DECLARED_SECTION = (
-        'xpath',
-        '//android.widget.TextView[@text="Normal Declarado"]')
-
-    COPY_EXPECTED_1 = (
-        'xpath',
-        '(//android.widget.TextView[@text="COPIAR ESPERADO"])[1]')
-
-    COPY_EXPECTED_2 = (
-        'xpath',
-        '(//android.widget.TextView[@text="COPIAR ESPERADO"])[2]')
-
-    FINALIZE_CLOSURE = (
-        'xpath',
-        '//android.widget.TextView[@text="Realizar Cierre"]'
-    )
+    CASH_CLOSURE_BUTTON = ('xpath','//android.view.ViewGroup[@content-desc=", Cierre de Caja"]')
+    DECLARED_SECTION = ('xpath','//android.widget.TextView[@text="Normal Declarado"]')
+    COPY_EXPECTED_1 = ('xpath','(//android.widget.TextView[@text="COPIAR ESPERADO"])[1]')
+    COPY_EXPECTED_2 = ('xpath','(//android.widget.TextView[@text="COPIAR ESPERADO"])[2]')
+    FINALIZE_CLOSURE = ('xpath','//android.widget.TextView[@text="Realizar Cierre"]')
 
     def __init__(self, driver):
         self.driver = driver
