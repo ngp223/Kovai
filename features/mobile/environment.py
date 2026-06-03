@@ -32,9 +32,6 @@ def before_all(context):
         options=options
     )
 
-    context.driver.implicitly_wait(10)
-
-
 def after_step(context, step):
 
     if step.status == "failed":

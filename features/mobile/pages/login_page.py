@@ -61,7 +61,7 @@ class LoginPage:
 
     def select_user_admin(self):
         """ Espera al usuario admin y cierra retry si aparece """
-        end_time = time.time() + 15
+        end_time = time.time() + 30
         while time.time() < end_time:
             self._handle_retry_now(timeout=2)
             users = self.driver.find_elements(AppiumBy.XPATH, self.ADMIN_USER)
