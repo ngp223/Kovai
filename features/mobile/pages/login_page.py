@@ -1,3 +1,4 @@
+import time
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -38,66 +39,52 @@ class LoginPage:
         self.click(AppiumBy.ACCESSIBILITY_ID, self.ACTIVATE_BUTTON)
 
     def select_restaurant(self, restaurant_name):
-
         xpath = f'//android.widget.TextView[@text="{restaurant_name}"]'
-
         self.wait.until(
             EC.element_to_be_clickable((AppiumBy.XPATH, xpath))
         ).click()
+        self._handle_retry_now(timeout=12)
 
-        self._handle_retry_now()
-
-    # POPUP
-    def _handle_retry_now(self):
-
-        try:
-            retry = WebDriverWait(self.driver, 3).until(
-                EC.presence_of_element_located(
-                    (AppiumBy.XPATH, self.RETRY_NOW)
-                )
-            )
-
-            if retry.is_displayed():
-                retry.click()
-                print("⚠ Popup 'Reintentar ahora' cerrado")
-
-        except:
-            pass
+    def _handle_retry_now(self, timeout=12):
+        """ Cierra el popup 'Reintentar ahora' si aparece """
+        end_time = time.time() + timeout
+        while time.time() < end_time:
+            try:
+                retry = self.driver.find_elements(AppiumBy.XPATH, self.RETRY_NOW)
+                if retry and retry[0].is_displayed():
+                    retry[0].click()
+                    print("⚠ Click en 'Reintentar ahora'")
+                    time.sleep(2)
+            except:
+                pass
+            time.sleep(0.5)
 
     def select_user_admin(self):
-
-        self.wait.until(
-            EC.element_to_be_clickable(
-                (AppiumBy.XPATH, self.ADMIN_USER)
-            )
-        ).click()
+        """ Espera al usuario admin y cierra retry si aparece """
+        end_time = time.time() + 15
+        while time.time() < end_time:
+            self._handle_retry_now(timeout=2)
+            users = self.driver.find_elements(AppiumBy.XPATH, self.ADMIN_USER)
+            if users and users[0].is_displayed():
+                users[0].click()
+                print("✅ Usuario admin seleccionado")
+                return
+            time.sleep(0.5)
+        raise Exception("❌ Usuario admin no apareció en el tiempo esperado")
 
     def enter_pin(self, pin="1234"):
-
         mapping = {
             "1": '//android.view.ViewGroup[@content-desc="1"]',
             "2": '//android.view.ViewGroup[@content-desc="2"]',
             "3": '//android.view.ViewGroup[@content-desc="3"]',
             "4": '//android.view.ViewGroup[@content-desc="4"]',
         }
-
         for digit in pin:
             self.wait.until(
-                EC.element_to_be_clickable(
-                    (AppiumBy.XPATH, mapping[digit])
-                )
+                EC.element_to_be_clickable((AppiumBy.XPATH, mapping[digit]))
             ).click()
 
     def click_access(self):
         self.wait.until(
-            EC.element_to_be_clickable(
-                (AppiumBy.XPATH, self.ACCESS_BUTTON)
-            )
+            EC.element_to_be_clickable((AppiumBy.XPATH, self.ACCESS_BUTTON))
         ).click()
-
-    def wait_tables_loaded(self):
-        self.wait.until(
-            EC.presence_of_element_located(
-                (AppiumBy.XPATH, '//android.view.ViewGroup[contains(@content-desc,"B")]')
-            )
-        )
