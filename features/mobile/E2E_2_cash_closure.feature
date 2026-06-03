@@ -12,3 +12,4 @@ Feature: Cash Closure POS
     And copio el esperado segundo
     And hago scroll hasta finalizar cierre
     Then realizo el cierre de caja
+    

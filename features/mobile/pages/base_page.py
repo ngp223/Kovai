@@ -9,9 +9,6 @@ class BasePage:
         self.driver = driver
         self.wait = WebDriverWait(driver, 30)
 
-    # -----------------------------
-    # CLICK
-    # -----------------------------
     def click(self, by, locator):
 
         element = self.wait.until(
@@ -20,9 +17,6 @@ class BasePage:
 
         element.click()
 
-    # -----------------------------
-    # WRITE
-    # -----------------------------
     def write(self, by, locator, text):
 
         element = self.wait.until(
@@ -32,18 +26,12 @@ class BasePage:
         element.clear()
         element.send_keys(text)
 
-    # -----------------------------
-    # GET ELEMENT
-    # -----------------------------
     def get_element(self, by, locator):
 
         return self.wait.until(
             EC.presence_of_element_located((by, locator))
         )
 
-    # -----------------------------
-    # CLICK TEXT
-    # -----------------------------
     def click_text(self, text):
 
         xpath = f'//*[@text="{text}"]'

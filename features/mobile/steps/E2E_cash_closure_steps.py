@@ -1,5 +1,5 @@
 from behave import when, then
-from mobile.pages.cash_closure_page import CashClosurePage
+from features.mobile.pages.cash_closure_page import CashClosurePage
 
 
 @when("accedo al cierre de caja")

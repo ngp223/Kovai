@@ -1,13 +1,17 @@
 from behave import given
-from mobile.pages.E2E_reservation_pages import ReservationPage
-from mobile.data.users import USERS
-from mobile.data.restaurants import RESTAURANTS
+
+from features.mobile.pages.login_page import LoginPage
+from features.mobile.pages.restaurant_page import RestaurantPage
+from features.mobile.data.users import USERS
+from features.mobile.data.restaurants import RESTAURANTS
 
 
 @given("la app está abierta")
 def step_impl(context):
     assert context.driver is not None
-    context.login = ReservationPage(context.driver)
+
+    context.login_page = LoginPage(context.driver)
+    context.restaurant_page = RestaurantPage(context.driver)
 
 
 @given('el usuario "{user}" está logueado en el POS')
@@ -15,21 +19,31 @@ def step_impl(context, user):
 
     credentials = USERS[user]
 
-    context.login.enter_email(credentials["email"])
-    context.login.enter_password(credentials["password"])
-    context.login.click_activate_terminal()
+    lp = context.login_page
+    rp = context.restaurant_page
 
+    # LOGIN
+    lp.enter_email(credentials["email"])
+    lp.enter_password(credentials["password"])
+    lp.click_activate_terminal()
+
+    # RESTAURANTE
     restaurant_name = RESTAURANTS["tamusGV"]
-    context.login.select_restaurant(restaurant_name)
+    rp.select_restaurant(restaurant_name)
 
-    context.login.select_user_admin()
+    # USUARIO ADMIN
+    lp.select_user_admin()
 
-    context.login.enter_pin("1234")
-    context.login.click_access()
+    # PIN + ACCESO
+    lp.enter_pin("1234")
+    lp.click_access()
 
-    context.login.wait_tables_loaded()
+    # ESPERA TPV LISTO
+    lp.wait_tables_loaded()
 
 
 @given("está en la pantalla de ventas")
 def step_impl(context):
-    context.login.see_ventas()
+    from features.mobile.pages.E2E_reservation_pages import ReservationPage
+
+    context.reservation = ReservationPage(context.driver)

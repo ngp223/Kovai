@@ -1,6 +1,7 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
 class CashClosurePage:
 
     CASH_CLOSURE_BUTTON = ('xpath','//android.view.ViewGroup[@content-desc=", Cierre de Caja"]')

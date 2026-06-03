@@ -14,3 +14,4 @@ Feature: Reservations POS
     And realizo el pago
     And confirmo el pago
     Then finalizo el pedido
+    And salgo del modo TPV

@@ -5,13 +5,13 @@ from datetime import datetime
 
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
+from features.mobile.pages.logout_page import LogoutPage
 
-root_path = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..")
-)
 
-if root_path not in sys.path:
-    sys.path.insert(0, root_path)
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
 
 def before_all(context):
 
@@ -34,9 +34,8 @@ def before_all(context):
 
     context.driver.implicitly_wait(10)
 
-def after_step(context, step):
 
-    print("STEP:", step.name, "STATUS:", step.status)
+def after_step(context, step):
 
     if step.status == "failed":
 
@@ -45,26 +44,40 @@ def after_step(context, step):
         if not os.path.exists(screenshots_dir):
             os.makedirs(screenshots_dir)
 
-        # timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-        # limpiar nombre del step
-        clean_name = re.sub(
-            r'[^A-Za-z0-9_]',
-            '_',
-            step.name
+        clean_name = re.sub(r'[^A-Za-z0-9_]', '_', step.name)
+
+        path = os.path.join(
+            screenshots_dir,
+            f"{clean_name}_{timestamp}.png"
         )
 
-        screenshot_name = f"{clean_name}_{timestamp}.png"
+        context.driver.save_screenshot(path)
 
-        path = os.path.join(screenshots_dir, screenshot_name)
 
-        if context.driver:
-            context.driver.save_screenshot(path)
-            print(f"\n📸 Screenshot guardado: {path}")
+def after_scenario(context, scenario):
+
+    if not hasattr(context, "driver") or context.driver is None:
+        return
+
+    try:
+
+        logout = LogoutPage(context.driver)
+
+        try:
+            logout.exit_pos_mode()
+        except:
+            pass
+
+        logout.open_change_user()
+        logout.go_back()
+        logout.close_company_session()
+
+    except Exception as e:
+        print("[AFTER_SCENARIO ERROR]", e)
+
 
 def after_all(context):
-
     if context.driver:
         context.driver.quit()
-        
