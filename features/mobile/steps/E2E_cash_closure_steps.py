@@ -1,5 +1,6 @@
 from behave import when, then
 from features.mobile.pages.E2E_cash_closure_page import CashClosurePage
+from features.utils.closure_store import save_closure
 
 
 @when("accedo al cierre de caja")
@@ -30,17 +31,28 @@ def step_impl(context):
 
 @then("realizo el cierre de caja")
 def step_impl(context):
+
+    try:
+        date = context.cash.get_last_closure_date()
+        amount = context.cash.get_last_closure_amount()
+
+        save_closure(date, amount)
+
+        print(f" Fecha guardada: {date}")
+        print(f" Importe guardado: {amount}")
+
+    except Exception as e:
+        print(f" No se pudieron guardar los datos del cierre: {e}")
+
     context.cash.finalize_closure()
 
 
-# 🧠 FECHA (OBLIGATORIA)
 @when("guardo la fecha del último cierre")
 def step_impl(context):
     context.last_closure_date = context.cash.get_last_closure_date()
-    print("🧠 Fecha cierre:", context.last_closure_date)
+    print(" Fecha cierre:", context.last_closure_date)
 
 
-# 💰 IMPORTANTE (OBLIGATORIO)
 @when("guardo el importe del último cierre")
 def step_impl(context):
     context.last_closure_amount = context.cash.get_last_closure_amount()

@@ -10,10 +10,8 @@ class CashClosurePage:
     COPY_EXPECTED_2 = ('xpath', '(//android.widget.TextView[@text="COPIAR ESPERADO"])[2]')
     FINALIZE_CLOSURE = ('xpath', '//android.widget.TextView[@text="Realizar Cierre"]')
 
-    # 🧠 dinámico (fecha último cierre)
     LAST_CLOSURE_DATE = ('xpath', '(//android.widget.TextView[contains(@text,"/")])[last()]')
 
-    # 💰 IMPORTANTE: IMPORTANTE DEL ÚLTIMO CIERRE (tu XPath real)
     LAST_CLOSURE_AMOUNT = (
         'xpath',
         '/html/body/div[1]/div/div/div/div[2]/div[2]/div/div[2]/div/div/div/div[3]/div/div[2]/div/div[4]/div/div/div/div/div/div/div/div/div/table/tbody/tr[3]/td[2]/div/span/span'
@@ -55,14 +53,12 @@ class CashClosurePage:
     def finalize_closure(self):
         self.click(self.FINALIZE_CLOSURE)
 
-    # 🧠 fecha cierre
     def get_last_closure_date(self):
         element = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located(self.LAST_CLOSURE_DATE)
         )
         return element.text
 
-    # 💰 importe cierre
     def get_last_closure_amount(self):
         element = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located(self.LAST_CLOSURE_AMOUNT)
