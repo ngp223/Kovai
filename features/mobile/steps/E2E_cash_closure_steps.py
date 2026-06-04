@@ -1,5 +1,5 @@
 from behave import when, then
-from features.mobile.pages.cash_closure_page import CashClosurePage
+from features.mobile.pages.E2E_cash_closure_page import CashClosurePage
 
 
 @when("accedo al cierre de caja")
@@ -31,3 +31,17 @@ def step_impl(context):
 @then("realizo el cierre de caja")
 def step_impl(context):
     context.cash.finalize_closure()
+
+
+# 🧠 FECHA (OBLIGATORIA)
+@when("guardo la fecha del último cierre")
+def step_impl(context):
+    context.last_closure_date = context.cash.get_last_closure_date()
+    print("🧠 Fecha cierre:", context.last_closure_date)
+
+
+# 💰 IMPORTANTE (OBLIGATORIO)
+@when("guardo el importe del último cierre")
+def step_impl(context):
+    context.last_closure_amount = context.cash.get_last_closure_amount()
+    print("💰 Importe cierre:", context.last_closure_amount)
