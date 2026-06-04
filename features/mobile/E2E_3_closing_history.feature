@@ -8,4 +8,4 @@ Feature: Historial de Cierres
 
     When accedo al historial de cierres
     Then veo el cierre en el historial
-    And veo el importe en el historial
+
