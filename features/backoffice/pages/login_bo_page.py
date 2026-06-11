@@ -1,41 +1,21 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import time
 
 
 class LoginPage_bo:
 
-    URL = "https://kovai.hi-iberia.es/dashboard"
-
-    EMAIL = (By.ID, "email")
-    PASSWORD = (By.ID, "password")
-    SUBMIT = (By.CSS_SELECTOR, "button[type='submit']")
-
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 10)
 
-    def open_bo(self):
-        self.driver.get(self.URL)
+        self.user = (By.ID, "email")
+        self.password = (By.ID, "password")
+        self.button = (By.XPATH, "//button[@type='submit']")
 
-    def login_bo(self, email, password):
+    def login_bo(self, user, password):
 
-        self.wait.until(
-            EC.visibility_of_element_located(self.EMAIL)
-        ).send_keys(email)
+        self.driver.find_element(*self.user).clear()
+        self.driver.find_element(*self.user).send_keys(user)
 
-        self.driver.find_element(*self.PASSWORD).send_keys(password)
+        self.driver.find_element(*self.password).clear()
+        self.driver.find_element(*self.password).send_keys(password)
 
-        self.wait.until(
-            EC.element_to_be_clickable(self.SUBMIT)
-        ).click()
-
-    def is_logged_in_bo(self):
-
-        self.wait.until(
-            lambda d: "/login" not in d.current_url
-        )
-        time.sleep(5)
-
-        return True
+        self.driver.find_element(*self.button).click()

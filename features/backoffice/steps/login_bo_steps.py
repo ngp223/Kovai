@@ -1,48 +1,24 @@
-from behave import given
-import time
-from features.backoffice.pages.login_bo_page import LoginPage_bo
-from features.backoffice.pages.restaurant_bo_page import RestaurantPage_bo
-from features.backoffice.data.users import USERS
-from features.backoffice.data.restaurants import RESTAURANTS
+from behave import when, then
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
-@given("backoffice está abierta")
-def step_impl(context):
-    assert context.driver is not None
-    context.login_page = LoginPage_bo(context.driver)
-    context.restaurant_page = RestaurantPage_bo(context.driver)
+@when("hago login con credenciales válidas")
+def step_login_bo(context):
 
+    # reutiliza el mismo step
+    context.execute_steps("""
+        Given el usuario "admin@demo.com" está logueado
+    """)
 
-@given('el usuario "{user}" está logueado')
-def step_impl(context, user):
-    credentials = USERS[user]
-    lp = context.login_page
-    rp = context.restaurant_page
+@then("entro al dashboard")
+def step_dashboard_bo(context):
 
-    # LOGIN
-    lp.enter_email(credentials["email"])
-    lp.enter_password(credentials["password"])
-    lp.click_activate_terminal()
-
-    # RESTAURANTE
-    restaurant_name = RESTAURANTS["tamusGV"]
-    rp.select_restaurant(restaurant_name)
-
-    # USUARIO ADMIN (espera + retry)
-    lp.select_user_admin()
-
-    # PIN + ACCESO
-    lp.enter_pin("1234")
-    lp.click_access()
-
-
-@given("está en panel de control")
-def step_impl(context):
-
-    titulo = context.driver.find_element(
-        By.XPATH,
-        '//*[@id="root"]/div/div/div/main/div/div[1]/h1'
+    titulo = WebDriverWait(context.driver, 10).until(
+        EC.visibility_of_element_located(
+            (By.XPATH, "//h1[text()='Panel de Control']")
+        )
     )
 
-    assert titulo.is_displayed(), "No se muestra el título del panel de control"
+    assert titulo.is_displayed()

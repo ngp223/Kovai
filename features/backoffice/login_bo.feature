@@ -1,7 +1,6 @@
 Feature: Login
 
   Scenario: Login correcto
-
-    Given abro backoffice
+    Given la web está abierta
     When hago login con credenciales válidas
     Then entro al dashboard
