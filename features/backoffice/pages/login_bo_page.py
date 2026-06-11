@@ -4,7 +4,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 
 
-class LoginPage:
+class LoginPage_bo:
 
     URL = "https://kovai.hi-iberia.es/dashboard"
 
@@ -16,10 +16,10 @@ class LoginPage:
         self.driver = driver
         self.wait = WebDriverWait(driver, 10)
 
-    def open(self):
+    def open_bo(self):
         self.driver.get(self.URL)
 
-    def login(self, email, password):
+    def login_bo(self, email, password):
 
         self.wait.until(
             EC.visibility_of_element_located(self.EMAIL)
@@ -31,7 +31,7 @@ class LoginPage:
             EC.element_to_be_clickable(self.SUBMIT)
         ).click()
 
-    def is_logged_in(self):
+    def is_logged_in_bo(self):
 
         self.wait.until(
             lambda d: "/login" not in d.current_url
