@@ -1,24 +1,25 @@
-from behave import when, then
+from behave import given, when, then
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from features.backoffice.pages.login_bo_page import LoginPage_bo
+from features.backoffice.data.users import USERS
 
+@when('hago login con credenciales válidas')
+def step_login_admin(context):
 
-@when("hago login con credenciales válidas")
-def step_login_bo(context):
+    user = USERS["admin"]
 
-    # reutiliza el mismo step
-    context.execute_steps("""
-        Given el usuario "admin@demo.com" está logueado
-    """)
+    page = LoginPage_bo(context.driver)
 
-@then("entro al dashboard")
-def step_dashboard_bo(context):
-
-    titulo = WebDriverWait(context.driver, 10).until(
-        EC.visibility_of_element_located(
-            (By.XPATH, "//h1[text()='Panel de Control']")
-        )
+    page.login_bo(
+        user["email"],
+        user["password"]
     )
 
-    assert titulo.is_displayed()
+
+@then("entro al panel de control")
+def step_panel_de_control(context):
+
+    title = context.driver.find_element(By.XPATH, "//h1")
+
+    assert title.text == "Panel de Control"
+    
