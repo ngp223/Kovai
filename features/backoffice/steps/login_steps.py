@@ -2,7 +2,7 @@ from behave import given, when, then
 from features.backoffice.pages.login_bo_page import LoginPage_bo
 
 
-@given("que abro el login")
+@given("abro backoffice")
 def step_open_bo(context):
     context.login_page = LoginPage_bo(context.driver)
     context.login_page.open_bo()
