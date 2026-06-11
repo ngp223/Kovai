@@ -1,4 +1,4 @@
-Feature: Login tablet
+Feature: Login
 
   Scenario: Login correcto
 

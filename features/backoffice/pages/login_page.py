@@ -6,7 +6,7 @@ import time
 
 class LoginPage:
 
-    URL = "https://kovai.davidtovar.dev/login"
+    URL = "https://kovai.hi-iberia.es/dashboard"
 
     EMAIL = (By.ID, "email")
     PASSWORD = (By.ID, "password")
