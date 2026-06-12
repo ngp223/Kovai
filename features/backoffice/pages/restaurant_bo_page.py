@@ -9,7 +9,7 @@ class RestaurantPage_bo:
         self.driver = driver
         self.wait = WebDriverWait(driver, 20)
 
-    def select_restaurant(self, restaurant_name):
+    def select_restaurant_bo(self, restaurant_name):
 
         restaurant = self.wait.until(
             EC.element_to_be_clickable(
