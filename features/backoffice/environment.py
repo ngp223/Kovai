@@ -3,11 +3,9 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-def before_all(context):
+def before_scenario(context, scenario):
 
     options = webdriver.ChromeOptions()
-
-    # Opcional: abrir maximizado
     options.add_argument("--start-maximized")
 
     context.driver = webdriver.Chrome(
@@ -18,5 +16,7 @@ def before_all(context):
     context.driver.implicitly_wait(10)
 
 
-def after_all(context):
-    context.driver.quit()
+def after_scenario(context, scenario):
+
+    if hasattr(context, "driver"):
+        context.driver.quit()
