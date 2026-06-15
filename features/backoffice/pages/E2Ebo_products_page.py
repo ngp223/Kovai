@@ -4,17 +4,17 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 
 
-class ProductosPage_bo:
+class ProductsPage_bo:
 
     def __init__(self, driver):
         self.driver = driver
 
-    PRODUCTOS_MENU = (
+    PRODUCTS_MENU = (
         By.XPATH,
         "//*[@id='root']/div/div/aside/nav/a[4]"
     )
 
-    NUEVO_PRODUCTO_BTN = (
+    NUEVO_PRODUCT_BTN = (
         By.XPATH,
         "//*[@id='root']/div/div/div/main/div/header/div[2]/button"
     )
@@ -28,10 +28,6 @@ class ProductosPage_bo:
         By.XPATH,
         "//*[@id='root']/div/div/div/main/div/div[3]/div/form/div[2]/button[2]"
     )
-
-    # =========================
-    # HELPERS
-    # =========================
 
     def click(self, locator, timeout=15):
 
@@ -58,21 +54,13 @@ class ProductosPage_bo:
 
         time.sleep(1)
 
-    # =========================
-    # ACCESO
-    # =========================
+    def open_products(self):
 
-    def open_productos(self):
+        self.click(self.PRODUCTS_MENU)
 
-        self.click(self.PRODUCTOS_MENU)
+    def create_product(self, nombre):
 
-    # =========================
-    # CREACIÓN
-    # =========================
-
-    def create_producto(self, nombre):
-
-        self.click(self.NUEVO_PRODUCTO_BTN)
+        self.click(self.NUEVO_PRODUCT_BTN)
 
         time.sleep(1)
 
