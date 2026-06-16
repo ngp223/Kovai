@@ -1,15 +1,14 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from random import choice
-import time
+
+from features.backoffice.pages.base_page import BasePage
 
 
-class ModifiersPage_bo:
+class ModifiersPage_bo(BasePage):
 
     def __init__(self, driver):
-        self.driver = driver
+        super().__init__(driver)
 
     MODIFIERS_MENU = (
         By.XPATH,
@@ -41,57 +40,27 @@ class ModifiersPage_bo:
         "//button[@type='submit' and contains(normalize-space(),'Crear')]"
     )
 
-    def click(self, locator, timeout=15):
-
-        element = WebDriverWait(self.driver, timeout).until(
-            EC.element_to_be_clickable(locator)
-        )
-
-        element.click()
-
-    def fill(self, locator, value, timeout=15):
-
-        element = WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(locator)
-        )
-
-        element.clear()
-        element.send_keys(value)
-
     def open_modifiers(self):
 
-        self.click(self.MODIFIERS_MENU)
+        self.wait_visible(self.MODIFIERS_MENU)
 
-        time.sleep(2)
+        self.click(self.MODIFIERS_MENU)
 
     def open_create_group_form(self):
 
         try:
-
-            print("Intentando botón: Crear primer grupo")
 
             self.click(
                 self.CREATE_FIRST_GROUP_BTN,
                 timeout=5
             )
 
-            print("Encontrado: Crear primer grupo")
-
         except TimeoutException:
-
-            print(
-                "No existe 'Crear primer grupo'. "
-                "Probando '+ Nuevo Grupo'"
-            )
 
             self.click(
                 self.NEW_GROUP_BTN,
                 timeout=10
             )
-
-            print("Encontrado: + Nuevo Grupo")
-
-        time.sleep(2)
 
     def create_modifier_group(self, group_name):
 
@@ -113,8 +82,4 @@ class ModifiersPage_bo:
             option_name
         )
 
-        time.sleep(1)
-
         self.click(self.CREATE_BTN)
-
-        time.sleep(4)

@@ -7,6 +7,6 @@ Feature: Productos,error, internal server error
   Scenario: Crear un nuevo producto
 
     Then accedo a productos
-#    And creo un nuevo producto
+    And creo un nuevo producto
 #    And el producto aparece en el listado
   # error, internal server error

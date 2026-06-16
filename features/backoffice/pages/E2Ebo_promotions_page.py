@@ -1,14 +1,13 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-import time
+
+from features.backoffice.pages.base_page import BasePage
 
 
-class PromotionsPage_bo:
+class PromotionsPage_bo(BasePage):
 
     def __init__(self, driver):
-        self.driver = driver
+        super().__init__(driver)
 
     PROMOTIONS_MENU = (
         By.XPATH,
@@ -35,56 +34,27 @@ class PromotionsPage_bo:
         "//button[@type='submit' and contains(.,'Crear Promoción')]"
     )
 
-    def click(self, locator, timeout=15):
-
-        element = WebDriverWait(self.driver, timeout).until(
-            EC.element_to_be_clickable(locator)
-        )
-
-        element.click()
-
-    def fill(self, locator, value, timeout=15):
-
-        element = WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(locator)
-        )
-
-        element.clear()
-        element.send_keys(value)
-
     def open_promotions(self):
 
-        self.click(self.PROMOTIONS_MENU)
+        self.wait_visible(self.PROMOTIONS_MENU)
 
-        time.sleep(2)
+        self.click(self.PROMOTIONS_MENU)
 
     def open_create_promotion_form(self):
 
         try:
-            print("Intentando botón: Crear primera promoción")
 
             self.click(
                 self.CREATE_FIRST_PROMOTION_BTN,
                 timeout=5
             )
 
-            print("Encontrado: Crear primera promoción")
-
         except TimeoutException:
-
-            print(
-                "No existe 'Crear primera promoción'. "
-                "Probando '+ Nueva Promoción'"
-            )
 
             self.click(
                 self.NEW_PROMOTION_BTN,
                 timeout=10
             )
-
-            print("Encontrado: + Nueva Promoción")
-
-        time.sleep(2)
 
     def create_promotion(self, promotion_name):
 
@@ -95,8 +65,6 @@ class PromotionsPage_bo:
             promotion_name
         )
 
-        time.sleep(2)
-
-        self.click(self.CREATE_PROMOTION_BTN)
-
-        time.sleep(4)
+        self.click(
+            self.CREATE_PROMOTION_BTN
+        )

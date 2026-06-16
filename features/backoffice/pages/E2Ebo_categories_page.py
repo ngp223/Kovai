@@ -1,13 +1,9 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import time
+
+from features.backoffice.pages.base_page import BasePage
 
 
-class CategoriesPage_bo:
-
-    def __init__(self, driver):
-        self.driver = driver
+class CategoriesPage_bo(BasePage):
 
     CATEGORIES_MENU = (
         By.XPATH,
@@ -29,45 +25,22 @@ class CategoriesPage_bo:
         "//button[@type='submit' and contains(normalize-space(),'Crear')]"
     )
 
-    def click(self, locator, timeout=15):
-
-        element = WebDriverWait(self.driver, timeout).until(
-            EC.element_to_be_clickable(locator)
-        )
-
-        element.click()
-
-    def fill(self, locator, value, timeout=15):
-
-        element = WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(locator)
-        )
-
-        element.clear()
-        element.send_keys(value)
+    def __init__(self, driver):
+        super().__init__(driver)
 
     def open_categories(self):
 
-        self.click(self.CATEGORIES_MENU)
+        self.wait_visible(self.CATEGORIES_MENU)
 
-        time.sleep(2)
+        self.click(self.CATEGORIES_MENU)
 
     def create_category(self, category_name):
 
-        self.click(
-            self.NEW_CATEGORY_BTN,
-            timeout=10
-        )
-
-        time.sleep(2)
+        self.click(self.NEW_CATEGORY_BTN)
 
         self.fill(
             self.CATEGORY_NAME_INPUT,
             category_name
         )
 
-        time.sleep(1)
-
         self.click(self.CREATE_BTN)
-
-        time.sleep(4)
