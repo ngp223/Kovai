@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from datetime import datetime
+from random import choice
 
 from features.backoffice.pages.E2Ebo_modifiers_page import ModifiersPage_bo
 
@@ -20,7 +21,15 @@ def step_create_modifier_group(context):
 
     timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
 
-    context.group_name = f"Grupo QA {timestamp}"
+    descripcion = choice([
+        "Chuletón",
+        "Chuleta",
+        "Solomillo"
+    ])
+
+    context.group_name = (
+        f"Grupo QA {descripcion} {timestamp}"
+    )
 
     context.modifiers_page.create_modifier_group(
         context.group_name
