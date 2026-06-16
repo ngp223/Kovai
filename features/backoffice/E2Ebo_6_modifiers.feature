@@ -1,0 +1,11 @@
+Feature: Modificadores
+
+  Background:
+    Given la web está abierta
+    When hago login con credenciales válidas
+
+  Scenario: Crear un nuevo grupo de modificadores
+
+    Then accedo a modificadores
+    And creo un nuevo grupo de modificadores
+    And el grupo de modificadores aparece en el listado
