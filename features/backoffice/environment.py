@@ -9,13 +9,32 @@ def before_scenario(context, scenario):
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
 
+    # =========================
+    # DOWNLOAD CONFIG (NECESARIO)
+    # =========================
+
+    download_dir = os.path.join(os.getcwd(), "downloads")
+    os.makedirs(download_dir, exist_ok=True)
+
+    prefs = {
+        "download.default_directory": download_dir,
+        "download.prompt_for_download": False,
+        "directory_upgrade": True,
+        "safebrowsing.enabled": True
+    }
+
+    options.add_experimental_option("prefs", prefs)
+
     context.driver = webdriver.Chrome(
         service=Service(ChromeDriverManager().install()),
         options=options
     )
 
-    # ❌ Quitar implicit wait (mezclar waits es mala práctica)
+    # ❌ No implicit waits
     context.driver.implicitly_wait(0)
+
+    # ✅ Compartido por tests que descargan
+    context.download_dir = download_dir
 
     context.debug_mode = True
 
