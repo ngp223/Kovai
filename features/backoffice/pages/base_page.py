@@ -1,8 +1,9 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
 from selenium.common.exceptions import (
-    StaleElementReferenceException,
-    TimeoutException
+    TimeoutException,
+    StaleElementReferenceException
 )
 
 
@@ -16,15 +17,22 @@ class BasePage:
         last_exception = None
 
         for _ in range(3):
+
             try:
-                element = WebDriverWait(self.driver, timeout).until(
+
+                element = WebDriverWait(
+                    self.driver,
+                    timeout
+                ).until(
                     EC.element_to_be_clickable(locator)
                 )
 
                 element.click()
+
                 return
 
             except StaleElementReferenceException as e:
+
                 last_exception = e
 
         raise TimeoutException(
@@ -33,7 +41,10 @@ class BasePage:
 
     def fill(self, locator, value, timeout=15):
 
-        element = WebDriverWait(self.driver, timeout).until(
+        element = WebDriverWait(
+            self.driver,
+            timeout
+        ).until(
             EC.visibility_of_element_located(locator)
         )
 
@@ -42,25 +53,52 @@ class BasePage:
 
     def wait_visible(self, locator, timeout=15):
 
-        return WebDriverWait(self.driver, timeout).until(
+        return WebDriverWait(
+            self.driver,
+            timeout
+        ).until(
             EC.visibility_of_element_located(locator)
         )
 
     def wait_clickable(self, locator, timeout=15):
 
-        return WebDriverWait(self.driver, timeout).until(
+        return WebDriverWait(
+            self.driver,
+            timeout
+        ).until(
             EC.element_to_be_clickable(locator)
         )
 
     def wait_invisible(self, locator, timeout=15):
 
-        return WebDriverWait(self.driver, timeout).until(
+        return WebDriverWait(
+            self.driver,
+            timeout
+        ).until(
             EC.invisibility_of_element_located(locator)
         )
 
+    def exists(self, locator, timeout=5):
+
+        try:
+
+            self.wait_visible(
+                locator,
+                timeout
+            )
+
+            return True
+
+        except TimeoutException:
+
+            return False
+
     def get_text(self, locator, timeout=15):
 
-        return self.wait_visible(locator, timeout).text
+        return self.wait_visible(
+            locator,
+            timeout
+        ).text
 
     def scroll_down(self, pixels=600):
 
@@ -70,7 +108,10 @@ class BasePage:
 
     def scroll_to_element(self, locator, timeout=15):
 
-        element = self.wait_visible(locator, timeout)
+        element = self.wait_visible(
+            locator,
+            timeout
+        )
 
         self.driver.execute_script(
             "arguments[0].scrollIntoView({block:'center'});",
