@@ -5,8 +5,6 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 
 from features.backoffice.pages.E2Ebo_cartas_page import CartasPage_bo
-from features.backoffice.data.users import USERS
-from features.backoffice.pages.login_bo_page import LoginPage_bo
 
 
 @then("accedo a cartas")
