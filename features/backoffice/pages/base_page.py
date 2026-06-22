@@ -28,7 +28,6 @@ class BasePage:
                 )
 
                 self._safe_scroll_into_view(element)
-
                 element.click()
                 return
 
@@ -39,15 +38,14 @@ class BasePage:
             ) as e:
 
                 last_exception = e
-
-                # pequeña espera reactiva (NO sleep fijo)
                 self._wait_short(0.3 * (attempt + 1))
 
-                # fallback JS si sigue fallando
                 if js_fallback:
                     try:
                         element = self.driver.find_element(*locator)
-                        self.driver.execute_script("arguments[0].click();", element)
+                        self.driver.execute_script(
+                            "arguments[0].click();", element
+                        )
                         return
                     except Exception:
                         pass
@@ -89,6 +87,11 @@ class BasePage:
             EC.presence_of_element_located(locator)
         )
 
+    def wait_invisible(self, locator, timeout=15):
+        return WebDriverWait(self.driver, timeout).until(
+            EC.invisibility_of_element_located(locator)
+        )
+
     # =========================================================
     # STATE CHECK
     # =========================================================
@@ -105,7 +108,9 @@ class BasePage:
     # SCROLL
     # =========================================================
     def scroll_down(self, pixels=800):
-        self.driver.execute_script(f"window.scrollBy(0,{pixels});")
+        self.driver.execute_script(
+            f"window.scrollBy(0,{pixels});"
+        )
 
     def scroll_to_element(self, locator, timeout=15):
         element = self.wait_present(locator, timeout)
