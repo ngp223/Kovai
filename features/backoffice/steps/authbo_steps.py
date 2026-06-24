@@ -1,4 +1,4 @@
-from behave import given
+from behave import given, when
 from features.backoffice.pages.login_bo_page import LoginPage_bo
 
 
@@ -11,3 +11,4 @@ def step_open_bo(context):
 def step_login_background(context, user):
     page = LoginPage_bo(context.driver)
     page.login_bo(user, "admin123")
+
