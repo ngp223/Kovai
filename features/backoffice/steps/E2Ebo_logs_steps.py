@@ -10,16 +10,12 @@ def step_open_logs(context):
 
 @then("estoy en la página de logs")
 def step_check_logs_page(context):
-    assert context.logs_page.is_logs_page(), (
-        "❌ No estoy en la página de Logs"
-    )
+    assert context.logs_page.is_logs_page(), ("❌ No estoy en la página de Logs")
 
 
 @then("filtro por el restaurante Sevilla")
 def step_filter_sevilla(context):
-    context.logs_page.select_restaurant(
-        "Tamus Rooftop Sevilla"
-    )
+    context.logs_page.select_restaurant("Tamus Rooftop Sevilla")
 
 
 @then("voy a la siguiente página de logs")
@@ -29,6 +25,4 @@ def step_next_page(context):
 
 @then("se muestra un id de log")
 def step_check_log_id(context):
-    assert context.logs_page.log_id_is_displayed(), (
-        "❌ No se muestra ningún ID de log"
-    )
+    assert context.logs_page.log_id_is_displayed(), ("❌ No se muestra ningún ID de log")

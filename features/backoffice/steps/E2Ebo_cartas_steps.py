@@ -3,7 +3,6 @@ from datetime import datetime
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
 from features.backoffice.pages.E2Ebo_cartas_page import CartasPage_bo
 
 
@@ -17,20 +16,20 @@ def step_open_cartas(context):
 def step_create_carta(context):
     timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
     context.carta_name = f"Carta QA {timestamp}"
-
     context.cartas_page.create_carta(context.carta_name)
+    
+@then("la carta aparece en el listado")
+def step_check(context):
+    locator = (By.XPATH,f"//*[contains(normalize-space(),'{context.carta_name}')]")
+    WebDriverWait(context.driver, 10).until(EC.visibility_of_element_located(locator))
 
 
 @then("borro la carta creada")
-def step_delete_carta(context):
+def step_delete(context):
     context.cartas_page.delete_carta(context.carta_name)
 
 
 @then("la carta no aparece en el listado")
 def step_check_deleted(context):
-
     locator = (By.XPATH, f"//*[contains(text(),'{context.carta_name}')]")
-
-    WebDriverWait(context.driver, 15).until(
-        EC.invisibility_of_element_located(locator)
-    )
+    WebDriverWait(context.driver, 15).until(EC.invisibility_of_element_located(locator))

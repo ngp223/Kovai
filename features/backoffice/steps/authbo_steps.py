@@ -9,6 +9,5 @@ def step_open_bo(context):
 
 @given('el usuario "{user}" está logueado')
 def step_login_background(context, user):
-
     page = LoginPage_bo(context.driver)
     page.login_bo(user, "admin123")

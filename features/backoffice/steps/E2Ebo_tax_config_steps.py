@@ -10,6 +10,4 @@ def step_open_tax_config(context):
 
 @then("estoy en la página de configuración fiscal")
 def step_check_tax_config_page(context):
-    assert context.tax_config_page.is_page_displayed(), (
-        "No se ha accedido a la página de Configuración Fiscal"
-    )
+    assert context.tax_config_page.is_page_displayed(), ("No se ha accedido a la página de Configuración Fiscal")
