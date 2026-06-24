@@ -1,9 +1,7 @@
 from behave import then
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 from random import choice
+from selenium.webdriver.common.by import By
 from features.backoffice.pages.E2Ebo_modifiers_page import ModifiersPage_bo
 
 
@@ -17,12 +15,20 @@ def step_open_modifiers(context):
 def step_create_modifier_group(context):
     timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
     descripcion = choice(["Chuletón","Chuleta","Solomillo"])
-    context.group_name = (f"Grupo QA {descripcion} {timestamp}")
+    context.group_name = f"Grupo QA {descripcion} {timestamp}"
     context.modifiers_page.create_modifier_group(context.group_name)
 
 
 @then("el grupo de modificadores aparece en el listado")
 def step_check_modifier_group(context):
-    group_locator = (By.XPATH,f"//*[contains(text(),'{context.group_name}')]")
-    element = WebDriverWait(context.driver, 20).until(EC.visibility_of_element_located(group_locator))
-    assert element.is_displayed(), (f"No se encontró el grupo {context.group_name}")
+    assert context.modifiers_page.exists_item(context.group_name)
+
+
+@then("elimino el grupo de modificadores")
+def step_delete_modifier_group(context):
+    context.modifiers_page.delete_modifier_group(context.group_name)
+
+
+@then("el grupo de modificadores no aparece en el listado")
+def step_check_deleted_modifier_group(context):
+    context.modifiers_page.wait_item_gone(context.group_name)
