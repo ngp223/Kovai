@@ -4,8 +4,10 @@ Feature: Usuarios
     Given la web está abierta
     When hago login con credenciales válidas
 
-  Scenario: Crear un nuevo usuario
+  Scenario: Crear y eliminar un usuario
 
     Then accedo a usuarios
     And creo un nuevo usuario
     And el usuario aparece en el listado
+    And elimino el usuario
+    And el usuario no aparece en el listado
