@@ -1,44 +1,34 @@
+from behave import then
+from datetime import datetime
+from random import choice
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from features.backoffice.pages.base_page import BasePage
-import time
-class CategoriesPage_bo(BasePage):
+from features.backoffice.pages.E2Ebo_categories_page import CategoriesPage_bo
 
-    CATEGORIES_MENU = (By.XPATH,"//a[@href='/categories']")
-    NEW_CATEGORY_BTN = (By.XPATH,"//button[contains(normalize-space(),'Nueva Categoría')]")
-    CATEGORY_NAME_INPUT = (By.XPATH,"//input[@placeholder='Ej: Bebidas']")
-    CREATE_BTN = (By.XPATH,"//button[@type='submit' and contains(normalize-space(),'Crear')]")
-    DELETE_BTN = (By.XPATH,".//button[@title='Eliminar']")
-    CONFIRM_DELETE_BTN = (By.XPATH,"//button[contains(@class,'_confirmButton') and contains(normalize-space(),'Eliminar')]")
 
-    def __init__(self, driver):
-        super().__init__(driver)
+@then("accedo a categorías")
+def step_open_categories(context):
+    context.categories_page=CategoriesPage_bo(context.driver)
+    context.categories_page.open_categories()
 
-    def open_categories(self):
-        self.wait_visible(self.CATEGORIES_MENU)
-        self.click(self.CATEGORIES_MENU)
 
-    def create_category(self, category_name):
-        self.click(self.NEW_CATEGORY_BTN)
-        self.fill(self.CATEGORY_NAME_INPUT,category_name)
-        self.click(self.CREATE_BTN)
+@then("creo una nueva categoría")
+def step_create_category(context):
+    timestamp=datetime.now().strftime("%d%m%Y_%H%M%S")
+    tipo=choice(["Ensalada","Carne","Pescado","Pasta"])
+    context.category_name=f"Categoría QA {tipo} {timestamp}"
+    context.categories_page.create_category(context.category_name)
 
-    def wait_category_in_list(self, name, timeout=10):
-        locator = (By.XPATH,f"//*[contains(normalize-space(),'{name}')]")
-        WebDriverWait(self.driver,timeout).until(EC.visibility_of_element_located(locator))
 
-    def wait_category_gone(self, name, timeout=10):
-        locator = (By.XPATH,f"//*[contains(normalize-space(),'{name}')]")
-        WebDriverWait(self.driver,timeout).until(EC.invisibility_of_element_located(locator))
+@then("la categoría aparece en el listado")
+def step_check_category(context):
+    context.categories_page.wait_category_in_list(context.category_name)
 
-    def delete_category(self, name):
-        self.wait_category_in_list(name)
-        row_locator = (By.XPATH,f"//*[contains(normalize-space(),'{name}')]/ancestor::tr[1]")
-        row = WebDriverWait(self.driver,5).until(EC.visibility_of_element_located(row_locator))
-        delete_btn = row.find_element(*self.DELETE_BTN)
-        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});",delete_btn)
-        time.sleep(5)
-        self.driver.execute_script("arguments[0].click();",delete_btn)
-        confirm_btn = WebDriverWait(self.driver,5).until(EC.element_to_be_clickable(self.CONFIRM_DELETE_BTN))
-        self.driver.execute_script("arguments[0].click();",confirm_btn)
+
+@then("elimino la categoría")
+def step_delete_category(context):
+    context.categories_page.delete_category(context.category_name)
+
+
+@then("la categoría no aparece en el listado")
+def step_check_deleted_category(context):
+    context.categories_page.wait_category_gone(context.category_name)
