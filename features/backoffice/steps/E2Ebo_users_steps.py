@@ -1,28 +1,30 @@
 from behave import then
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
-from random import choice
-from features.backoffice.pages.E2Ebo_categories_page import CategoriesPage_bo
+from features.backoffice.pages.E2Ebo_users_page import UsersPage_bo
 
-@then("accedo a categorías")
-def step_open_categories(context):
-    context.categories_page = CategoriesPage_bo(context.driver)
-    context.categories_page.open_categories()
+@then("accedo a usuarios")
+def step_open_users(context):
+    context.users_page=UsersPage_bo(context.driver)
+    context.users_page.open_users()
 
-@then("creo una nueva categoría")
-def step_create_category(context):
-    timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
-    tipo_categoria = choice(["Ensalada","Carne","Pescado","Pasta"])
-    context.category_name = f"Categoría QA {tipo_categoria} {timestamp}"
-    context.categories_page.create_category(context.category_name)
+@then("creo un nuevo usuario")
+def step_create_user(context):
+    timestamp=datetime.now().strftime("%d%m%Y_%H%M%S")
+    context.selected_role=context.users_page.select_random_role()
+    context.user_name=f"{context.selected_role}QA {timestamp}"
+    context.users_page.create_user(context.user_name)
 
-@then("la categoría aparece en el listado")
-def step_check_category(context):
-    context.categories_page.wait_category_in_list(context.category_name)
+@then("el usuario aparece en el listado")
+def step_user_exists(context):
+    context.users_page.wait_user_in_list(context.user_name)
 
-@then("elimino la categoría")
-def step_delete_category(context):
-    context.categories_page.delete_category(context.category_name)
+@then("elimino el usuario")
+def step_delete_user(context):
+    context.users_page.delete_user(context.user_name)
 
-@then("la categoría no aparece en el listado")
-def step_category_not_present(context):
-    context.categories_page.wait_category_gone(context.category_name)
+@then("el usuario no aparece en el listado")
+def step_user_not_exists(context):
+    context.users_page.wait_user_gone(context.user_name)
