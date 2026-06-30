@@ -31,3 +31,8 @@ def step_delete_table(context):
 @then("la mesa no aparece en el mapa")
 def step_check_deleted(context):
     context.tables_page.wait_table_deleted()
+    
+    
+@then("muevo la mesa")
+def step_move_table(context):
+    context.tables_page.move_table()
