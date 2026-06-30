@@ -19,7 +19,7 @@ class TablesPage_bo(BasePage):
 
     RECTANGULAR_BTN = (
         By.XPATH,
-        "//button[@title='Anadir mesa rectangular' or @title='Añadir mesa rectangular' or contains(.,'Rectangular')]"
+        "//button[contains(@title,'rectangular') or contains(.,'Rectangular')]"
     )
 
     TABLE = (
@@ -36,6 +36,8 @@ class TablesPage_bo(BasePage):
         super().__init__(driver)
         self.current_table = None
 
+    # ---------------- NAV ----------------
+
     def open_tables(self):
         self.wait_visible(self.TABLES_MENU)
         self.click(self.TABLES_MENU)
@@ -44,19 +46,20 @@ class TablesPage_bo(BasePage):
         select = WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located(self.RESTAURANT_SELECT)
         )
-
         Select(select).select_by_visible_text("Tamus Rooftop Sevilla")
         time.sleep(2)
 
+    # ---------------- CREATE ----------------
+
     def create_table(self):
+
+        tables_before = len(self.driver.find_elements(*self.TABLE))
 
         try:
             btn = WebDriverWait(self.driver, 3).until(
                 EC.element_to_be_clickable(self.FIRST_TABLE_BTN)
             )
-
         except TimeoutException:
-
             btn = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(self.RECTANGULAR_BTN)
             )
@@ -66,31 +69,27 @@ class TablesPage_bo(BasePage):
             btn
         )
 
-        time.sleep(1)
+        time.sleep(0.5)
 
         self.driver.execute_script(
             "arguments[0].click();",
             btn
         )
 
-        self.wait_table_created()
-
-        self.current_table = WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located(self.TABLE)
+        WebDriverWait(self.driver, 10).until(
+            lambda d: len(d.find_elements(*self.TABLE)) == tables_before + 1
         )
+
+        self.current_table = self.driver.find_elements(*self.TABLE)[-1]
 
         self.driver.execute_script(
             "arguments[0].scrollIntoView({block:'center'});",
             self.current_table
         )
 
-        time.sleep(3)
+        time.sleep(1)
 
-    def wait_table_created(self, timeout=10):
-
-        WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(self.TABLE)
-        )
+    # ---------------- MOVE ----------------
 
     def move_table(self):
 
@@ -101,7 +100,7 @@ class TablesPage_bo(BasePage):
             table
         )
 
-        time.sleep(1)
+        time.sleep(0.5)
 
         ActionChains(self.driver) \
             .move_to_element(table) \
@@ -111,33 +110,51 @@ class TablesPage_bo(BasePage):
             .release() \
             .perform()
 
-        time.sleep(3)
+        time.sleep(2)
+
+        # 🔥 re-captura la última mesa (la movida sigue siendo la última)
+        self.current_table = self.driver.find_elements(*self.TABLE)[-1]
+
+    # ---------------- DELETE ----------------
 
     def delete_table(self):
 
-        if self.current_table is None:
-            self.current_table = WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_element_located(self.TABLE)
-            )
+        table = self.current_table
 
-        delete_btn = self.current_table.find_element(*self.DELETE_BTN)
+        delete_btn = table.find_element(*self.DELETE_BTN)
 
         self.driver.execute_script(
             "arguments[0].scrollIntoView({block:'center'});",
             delete_btn
         )
 
-        time.sleep(1)
+        time.sleep(0.5)
 
         self.driver.execute_script(
             "arguments[0].click();",
             delete_btn
         )
 
-        time.sleep(2)
+        time.sleep(1)
 
-    def wait_table_deleted(self, timeout=10):
+        try:
+            confirm = WebDriverWait(self.driver, 3).until(
+                EC.element_to_be_clickable(
+                    (By.XPATH, "//button[contains(.,'Confirmar') or contains(.,'Eliminar')]")
+                )
+            )
+            self.driver.execute_script("arguments[0].click();", confirm)
+        except TimeoutException:
+            pass
 
-        WebDriverWait(self.driver, timeout).until(
+    # ---------------- WAIT ----------------
+
+    def wait_table_created(self):
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of(self.current_table)
+        )
+
+    def wait_table_deleted(self):
+        WebDriverWait(self.driver, 10).until(
             EC.staleness_of(self.current_table)
         )
