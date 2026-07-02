@@ -8,7 +8,9 @@ Feature: Soporte
     Then accedo a soporte
     And creo una petición de soporte
     And la petición aparece en el listado
-
+    And cambio el estado a en proceso
+    And la petición aparece en el listado
+  
     # Pendiente de implementación en la aplicación
     # And elimino la petición
     # And la petición no aparece en el listado
