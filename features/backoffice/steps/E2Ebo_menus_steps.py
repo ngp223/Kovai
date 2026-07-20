@@ -13,7 +13,7 @@ def step(context):
 
 @then("el menu aparece en el listado")
 def step(context):
-    assert context.menus_page.exists_item(context.menu_name)
+    assert context.menus_page.exists_item(context.menu_name), f"No aparece el menu {context.menu_name}"
 
 @then("borro el menu creado")
 def step(context):
