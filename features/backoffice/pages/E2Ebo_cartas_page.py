@@ -11,6 +11,8 @@ class CartasPage_bo(BasePage, BaseListMixin, BaseCRUDMixin):
     RADIO = (By.XPATH, "//input[@type='radio']")
     CREATE = (By.XPATH, "//button[contains(.,'Crear')]")
     CONTINUE = (By.XPATH, "//button[normalize-space()='Continuar']")
+    DESCRIPTION = (By.XPATH, "//textarea[@placeholder='Descripción opcional de la carta...']")
+    SAVE = (By.XPATH, "//button[contains(.,'Guardar')]")
 
     def open(self):
         self.click(self.CARTAS_MENU)
@@ -23,6 +25,22 @@ class CartasPage_bo(BasePage, BaseListMixin, BaseCRUDMixin):
         self.fill(self.NAME, name)
         self.click(self.RADIO)
         self.click(self.CREATE)
+        try:
+            self.click(self.CONTINUE, timeout=5)
+        except:
+            pass
+
+    def edit_carta(self, name):
+        edit_btn = (By.XPATH, f"//tr[contains(.,'{name}')]//button[@title='Editar carta maestra']")
+        self.click(edit_btn)
+
+    def modify_description(self, text):
+        self.fill(self.DESCRIPTION, text)
+
+    def save_changes(self):
+        self.click(self.SAVE)
+
+    def confirm_changes(self):
         try:
             self.click(self.CONTINUE, timeout=5)
         except:
