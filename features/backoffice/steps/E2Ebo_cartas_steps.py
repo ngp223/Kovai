@@ -22,6 +22,7 @@ def step(context):
 @then('modifico la descripción de la carta con "{texto}" y la fecha')
 def step(context, texto):
     context.cartas_page.modify_description(f"{texto} {time.strftime('%d/%m/%Y')}")
+    time.sleep(20)
 
 @then("guardo los cambios de la carta")
 def step(context):

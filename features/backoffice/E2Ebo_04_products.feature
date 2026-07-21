@@ -1,4 +1,4 @@
-Feature: Productos,error, internal server error
+Feature: Productos
 
   Background:
     Given la web está abierta
@@ -7,6 +7,7 @@ Feature: Productos,error, internal server error
   Scenario: Crear un nuevo producto
 
     Then accedo a productos
-    And creo un nuevo producto
-#    And el producto aparece en el listado
-  # error, internal server error
+    # And creo un nuevo producto (error, internal server error)
+    # And el producto aparece en el listado
+    And modifico el producto
+    And restablezco el producto
