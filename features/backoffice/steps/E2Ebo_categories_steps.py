@@ -1,7 +1,6 @@
 from behave import then
 from datetime import datetime
 from random import choice
-from selenium.webdriver.common.by import By
 from features.backoffice.pages.E2Ebo_categories_page import CategoriesPage_bo
 
 
@@ -16,6 +15,7 @@ def step_create_category(context):
     timestamp=datetime.now().strftime("%d%m%Y_%H%M%S")
     tipo=choice(["Ensalada","Carne","Pescado","Pasta"])
     context.category_name=f"Categoría QA {tipo} {timestamp}"
+    context.modified_category_name=f"{context.category_name} modificada {timestamp}"
     context.categories_page.create_category(context.category_name)
 
 
@@ -24,11 +24,24 @@ def step_check_category(context):
     context.categories_page.wait_category_in_list(context.category_name)
 
 
+@then("modifico la categoría")
+def step_modify_category(context):
+    context.categories_page.modify_category(
+        context.category_name,
+        context.modified_category_name
+    )
+
+
+@then("la categoría modificada aparece en el listado")
+def step_check_modified_category(context):
+    context.categories_page.wait_category_in_list(context.modified_category_name)
+
+
 @then("elimino la categoría")
 def step_delete_category(context):
-    context.categories_page.delete_category(context.category_name)
+    context.categories_page.delete_category(context.modified_category_name)
 
 
 @then("la categoría no aparece en el listado")
 def step_check_deleted_category(context):
-    context.categories_page.wait_category_gone(context.category_name)
+    context.categories_page.wait_category_gone(context.modified_category_name)
