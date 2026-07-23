@@ -1,7 +1,6 @@
 from behave import then
 from datetime import datetime
 from random import choice
-from time import sleep
 from features.backoffice.pages.E2Ebo_modifiers_page import ModifiersPage_bo
 
 @then("accedo a modificadores")
@@ -23,7 +22,6 @@ def step_check_modifier_group(context):
 @then("modifico el grupo de modificadores")
 def step_modify_modifier_group(context):
     context.modifiers_page.edit_modifier_group(context.group_name)
-    sleep(2)
 
 @then("elimino el grupo de modificadores")
 def step_delete_modifier_group(context):

@@ -3,11 +3,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from random import choice
-from time import sleep
 from features.backoffice.pages.base_page import BasePage
 
 class ModifiersPage_bo(BasePage):
-
     def __init__(self,driver):
         super().__init__(driver)
 
@@ -19,9 +17,18 @@ class ModifiersPage_bo(BasePage):
     CREATE_BTN=(By.XPATH,"//button[@type='submit' and contains(normalize-space(),'Crear')]")
     ADD_OPTION_BTN=(By.XPATH,"//button[contains(normalize-space(),'Añadir opción')]")
     SAVE_BTN=(By.XPATH,"//button[@type='submit' and contains(normalize-space(),'Guardar')]")
+    CONTINUE_BTN=(By.XPATH,"//button[contains(normalize-space(),'Continuar')]")
 
     def open_modifiers(self):
         self.click(self.MODIFIERS_MENU)
+
+    def close_continue_popup(self):
+        try:
+            btn=WebDriverWait(self.driver,5).until(EC.element_to_be_clickable(self.CONTINUE_BTN))
+            self.driver.execute_script("arguments[0].click();",btn)
+            WebDriverWait(self.driver,10).until(EC.invisibility_of_element_located(self.CONTINUE_BTN))
+        except:
+            pass
 
     def open_create_group_form(self):
         try:
@@ -32,16 +39,16 @@ class ModifiersPage_bo(BasePage):
     def create_modifier_group(self,group_name):
         self.open_create_group_form()
         self.fill(self.GROUP_NAME_INPUT,group_name)
-        option_name=choice(["Muy hecho","Poco hecho","Al punto"])
-        self.fill(self.OPTION_NAME_INPUT,option_name)
+        self.fill(self.OPTION_NAME_INPUT,choice(["Muy hecho","Poco hecho","Al punto"]))
         self.click(self.CREATE_BTN)
-        sleep(2)
+        self.close_continue_popup()
+        self.wait_group_in_list(group_name)
 
-    def wait_group_in_list(self,name,timeout=5):
-        locator=(By.XPATH,f"//div[contains(@class,'_itemName') and contains(normalize-space(),'{name}')]")
+    def wait_group_in_list(self,name,timeout=10):
+        locator=(By.XPATH,f"//div[contains(@class,'_itemName') and normalize-space()='{name}']")
         WebDriverWait(self.driver,timeout).until(EC.presence_of_element_located(locator))
 
-    def exists_item(self,name,timeout=5):
+    def exists_item(self,name,timeout=10):
         try:
             self.wait_group_in_list(name,timeout)
             return True
@@ -50,63 +57,31 @@ class ModifiersPage_bo(BasePage):
 
     def edit_modifier_group(self,name):
         self.wait_group_in_list(name)
-
-        row=WebDriverWait(self.driver,5).until(
-            EC.presence_of_element_located(
-                (By.XPATH,f"//div[contains(@class,'_itemName') and contains(normalize-space(),'{name}')]/ancestor::tr[1]")
-            )
-        )
-
-        edit_btn=row.find_element(By.XPATH,".//button[@title='Editar']")
+        edit_locator=(By.XPATH,f"//div[contains(@class,'_itemName') and normalize-space()='{name}']/ancestor::tr[1]//button[@title='Editar']")
+        edit_btn=WebDriverWait(self.driver,10).until(EC.presence_of_element_located(edit_locator))
         self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});",edit_btn)
-        sleep(1)
         self.driver.execute_script("arguments[0].click();",edit_btn)
-        sleep(2)
-
-        self.click(self.ADD_OPTION_BTN)
-        sleep(2)
-
+        add_btn=WebDriverWait(self.driver,10).until(EC.presence_of_element_located(self.ADD_OPTION_BTN))
+        self.driver.execute_script("arguments[0].click();",add_btn)
         option_locator=(By.XPATH,"//input[@placeholder='Nombre de la opción (Ej: Muy hecho)']")
-
-        WebDriverWait(self.driver,5).until(
-            EC.visibility_of_element_located(option_locator)
-        )
-
-        inputs=self.driver.find_elements(*option_locator)
-
-        visible_inputs=[x for x in inputs if x.is_displayed()]
-
-        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});",visible_inputs[-1])
-        sleep(1)
-        visible_inputs[-1].send_keys("aditivoQA")
-        sleep(2)
-
+        WebDriverWait(self.driver,10).until(EC.visibility_of_element_located(option_locator))
+        inputs=[i for i in self.driver.find_elements(*option_locator) if i.is_displayed()]
+        inputs[-1].send_keys("aditivoQA")
         self.click(self.SAVE_BTN)
-        sleep(3)
+        self.close_continue_popup()
+        self.wait_group_in_list(name)
 
     def delete_modifier_group(self,name):
         self.wait_group_in_list(name)
-
-        row=WebDriverWait(self.driver,5).until(
-            EC.presence_of_element_located(
-                (By.XPATH,f"//div[contains(@class,'_itemName') and contains(normalize-space(),'{name}')]/ancestor::tr[1]")
-            )
-        )
-
-        delete_btn=row.find_element(By.XPATH,".//button[@title='Eliminar']")
-
+        delete_locator=(By.XPATH,f"//div[contains(@class,'_itemName') and normalize-space()='{name}']/ancestor::tr[1]//button[@title='Eliminar']")
+        delete_btn=WebDriverWait(self.driver,10).until(EC.presence_of_element_located(delete_locator))
         self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});",delete_btn)
-        sleep(1)
         self.driver.execute_script("arguments[0].click();",delete_btn)
-
-        confirm=WebDriverWait(self.driver,5).until(
-            EC.element_to_be_clickable((By.XPATH,"//button[contains(.,'Eliminar')]"))
-        )
-
-        sleep(1)
+        confirm_locator=(By.XPATH,"//button[contains(.,'Eliminar')]")
+        confirm=WebDriverWait(self.driver,10).until(EC.presence_of_element_located(confirm_locator))
         self.driver.execute_script("arguments[0].click();",confirm)
-        sleep(2)
+        self.close_continue_popup()
 
-    def wait_item_gone(self,name,timeout=5):
-        locator=(By.XPATH,f"//div[contains(@class,'_itemName') and contains(normalize-space(),'{name}')]")
+    def wait_item_gone(self,name,timeout=10):
+        locator=(By.XPATH,f"//div[contains(@class,'_itemName') and normalize-space()='{name}']")
         WebDriverWait(self.driver,timeout).until(EC.invisibility_of_element_located(locator))
