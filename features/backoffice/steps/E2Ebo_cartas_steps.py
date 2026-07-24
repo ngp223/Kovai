@@ -14,9 +14,9 @@ def step(context):
 def step(context):
     assert context.cartas_page.exists_item(context.carta_name)
 
-@then("cambio restaurante Tamus Rooftop Sevilla")
-def step(context):
-    context.cartas_page.change_restaurant("Tamus Rooftop Sevilla")
+@then('cambio al restaurante "{restaurante}"')
+def step(context, restaurante):
+    context.cartas_page.change_restaurant(restaurante)
 
 @then("asigno la carta creada como carta maestra")
 def step(context):
@@ -34,9 +34,6 @@ def step(context):
 def step(context):
     context.cartas_page.verify_default_card(context.carta_name)
 
-@then("vuelvo al restaurante Tamus Beach Club Marbella")
-def step(context):
-    context.cartas_page.change_restaurant("Tamus Beach Club Marbella")
 
 @then("edito la carta creada")
 def step(context):
@@ -61,3 +58,9 @@ def step(context):
 @then("la carta no aparece en el listado")
 def step(context):
     context.cartas_page.wait_item_gone(context.carta_name)
+    
+@then("escaneo la carta con IA")
+def step_scan_card(context):
+    context.cartas_page.open_scan_card()
+    context.cartas_page.upload_card_image(r"C:\Users\Nerea QA\Desktop\foto_menu_ej.jpg")
+    context.cartas_page.scan_card()

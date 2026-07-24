@@ -17,6 +17,9 @@ class CartasPage_bo(BasePage, BaseListMixin, BaseCRUDMixin):
     RESTAURANT = (By.TAG_NAME, "select")
     ASSIGN_MASTER = (By.XPATH, "//button[contains(.,'Asignar una carta maestra')]")
     CLOSE = (By.XPATH, "//button[normalize-space()='Cerrar']")
+    SCAN_CARD = (By.XPATH, "//button[contains(.,'Escanear Carta con IA')]")
+    FILE_INPUT = (By.XPATH, "//input[@type='file']")
+    SCAN_BUTTON = (By.XPATH, "//button[contains(.,'Escanear Carta')]")
 
     def open(self):
         self.click(self.CARTAS_MENU)
@@ -75,3 +78,13 @@ class CartasPage_bo(BasePage, BaseListMixin, BaseCRUDMixin):
 
     def delete_carta(self, name):
         self.delete_by_name(name)
+
+    def open_scan_card(self):
+        self.click(self.SCAN_CARD)
+
+    def upload_card_image(self, file_path):
+        self.driver.find_element(*self.FILE_INPUT).send_keys(file_path)
+        time.sleep(3)
+
+    def scan_card(self):
+        self.click(self.SCAN_BUTTON)
