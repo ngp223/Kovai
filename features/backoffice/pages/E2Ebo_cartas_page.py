@@ -1,5 +1,6 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import Select, WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time
 from features.backoffice.pages.base_page import BasePage
 from features.backoffice.pages.base_list_mixin import BaseListMixin
@@ -17,9 +18,11 @@ class CartasPage_bo(BasePage, BaseListMixin, BaseCRUDMixin):
     RESTAURANT = (By.TAG_NAME, "select")
     ASSIGN_MASTER = (By.XPATH, "//button[contains(.,'Asignar una carta maestra')]")
     CLOSE = (By.XPATH, "//button[normalize-space()='Cerrar']")
-    SCAN_CARD = (By.XPATH, "//button[contains(.,'Escanear Carta con IA')]")
+    SCAN_CARD = (By.XPATH, "//button[normalize-space()='Escanear Carta con IA']")
     FILE_INPUT = (By.XPATH, "//input[@type='file']")
-    SCAN_BUTTON = (By.XPATH, "//button[contains(.,'Escanear Carta')]")
+    SCAN_BUTTON = (By.XPATH, "//button[@class='_buttonPrimary_nq83h_380' and normalize-space()='Escanear Carta']")
+    CANCEL_SCAN = (By.XPATH, "//button[@class='_buttonSecondary_nq83h_381' and normalize-space()='Cancelar']")
+    AI_ERROR_MESSAGE = (By.XPATH, "//*[contains(text(),'OpenAI API key not configured or AI is disabled')]")
 
     def open(self):
         self.click(self.CARTAS_MENU)
@@ -79,12 +82,33 @@ class CartasPage_bo(BasePage, BaseListMixin, BaseCRUDMixin):
     def delete_carta(self, name):
         self.delete_by_name(name)
 
+    def confirm_delete(self):
+        try:
+            self.click(self.CONTINUE, timeout=3)
+        except Exception:
+            pass
+
     def open_scan_card(self):
         self.click(self.SCAN_CARD)
 
     def upload_card_image(self, file_path):
-        self.driver.find_element(*self.FILE_INPUT).send_keys(file_path)
-        time.sleep(3)
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(self.FILE_INPUT)
+        ).send_keys(file_path)
 
     def scan_card(self):
-        self.click(self.SCAN_BUTTON)
+        button = WebDriverWait(self.driver, 20).until(
+            EC.element_to_be_clickable(self.SCAN_BUTTON)
+        )
+        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", button)
+        self.driver.execute_script("arguments[0].click();", button)
+
+    def verify_ai_error_message(self):
+        WebDriverWait(self.driver, 30).until(
+            EC.visibility_of_element_located(self.AI_ERROR_MESSAGE)
+        )
+
+    def cancel_scan(self):
+        WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(self.CANCEL_SCAN)
+        ).click()

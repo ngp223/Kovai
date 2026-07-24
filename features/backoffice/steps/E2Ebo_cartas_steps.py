@@ -34,7 +34,6 @@ def step(context):
 def step(context):
     context.cartas_page.verify_default_card(context.carta_name)
 
-
 @then("edito la carta creada")
 def step(context):
     context.cartas_page.edit_carta(context.carta_name)
@@ -54,13 +53,16 @@ def step(context):
 @then("borro la carta creada")
 def step(context):
     context.cartas_page.delete_carta(context.carta_name)
+    context.cartas_page.confirm_delete()
 
 @then("la carta no aparece en el listado")
 def step(context):
     context.cartas_page.wait_item_gone(context.carta_name)
-    
+
 @then("escaneo la carta con IA")
-def step_scan_card(context):
+def step(context):
     context.cartas_page.open_scan_card()
     context.cartas_page.upload_card_image(r"C:\Users\Nerea QA\Desktop\foto_menu_ej.jpg")
     context.cartas_page.scan_card()
+    context.cartas_page.verify_ai_error_message()
+    context.cartas_page.cancel_scan()
