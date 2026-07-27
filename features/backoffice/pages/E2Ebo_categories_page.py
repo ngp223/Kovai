@@ -12,8 +12,12 @@ class CategoriesPage_bo(BasePage):
     EDIT_BTN=(By.XPATH,".//button[@title='Editar']")
     SAVE_BTN=(By.XPATH,"//button[@type='submit' and contains(normalize-space(),'Guardar')]")
     DELETE_BTN=(By.XPATH,".//button[@title='Eliminar']")
-    CONFIRM_DELETE_BTN=(By.XPATH,"//button[contains(@class,'_confirmButton') and contains(normalize-space(),'Eliminar')]")
+    CONFIRM_DELETE_BTN=(By.XPATH,"//button[contains(@class,'_confirmButton_') and contains(normalize-space(),'Eliminar')]")
     CONTINUE_BTN=(By.XPATH,"//button[contains(normalize-space(),'Continuar')]")
+    ROLE_NAME_INPUT=(By.XPATH,"//input[@placeholder='Ej: COCINA_CALIENTE']")
+    CREATE_ROLE_BTN=(By.XPATH,"//button[@type='button' and contains(normalize-space(),'Crear rol')]")
+    DELETE_ROLE_BTN=(By.XPATH,".//button[@title='Eliminar rol']")
+    CONFIRM_ROLE_DELETE_BTN = (By.XPATH, "//button[contains(@class,'_confirmButton_') and contains(normalize-space(),'Eliminar')]")
 
     def __init__(self,driver):
         super().__init__(driver)
@@ -36,11 +40,25 @@ class CategoriesPage_bo(BasePage):
         self.click(self.CREATE_BTN)
         self.close_continue_popup()
 
+    def create_role(self,role_name):
+        self.fill(self.ROLE_NAME_INPUT,role_name)
+        self.click(self.CREATE_ROLE_BTN)
+        self.close_continue_popup()
+        self.wait_role_in_list(role_name)
+
     def wait_category_in_list(self,name,timeout=10):
         locator=(By.XPATH,f"//*[contains(normalize-space(),'{name}')]")
         WebDriverWait(self.driver,timeout).until(EC.visibility_of_element_located(locator))
 
     def wait_category_gone(self,name,timeout=10):
+        locator=(By.XPATH,f"//*[contains(normalize-space(),'{name}')]")
+        WebDriverWait(self.driver,timeout).until(EC.invisibility_of_element_located(locator))
+
+    def wait_role_in_list(self,name,timeout=20):
+        locator=(By.XPATH,f"//*[contains(normalize-space(),'{name}')]")
+        WebDriverWait(self.driver,timeout).until(EC.visibility_of_element_located(locator))
+
+    def wait_role_gone(self,name,timeout=20):
         locator=(By.XPATH,f"//*[contains(normalize-space(),'{name}')]")
         WebDriverWait(self.driver,timeout).until(EC.invisibility_of_element_located(locator))
 
@@ -51,8 +69,7 @@ class CategoriesPage_bo(BasePage):
         edit_btn=row.find_element(*self.EDIT_BTN)
         self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});",edit_btn)
         self.driver.execute_script("arguments[0].click();",edit_btn)
-        input_locator=(By.XPATH,"//input[@placeholder='Ej: Bebidas']")
-        input_element=WebDriverWait(self.driver,5).until(EC.visibility_of_element_located(input_locator))
+        input_element=WebDriverWait(self.driver,5).until(EC.visibility_of_element_located(self.CATEGORY_NAME_INPUT))
         input_element.clear()
         input_element.send_keys(new_name)
         save_btn=WebDriverWait(self.driver,5).until(EC.presence_of_element_located(self.SAVE_BTN))
@@ -70,3 +87,16 @@ class CategoriesPage_bo(BasePage):
         confirm_btn=WebDriverWait(self.driver,5).until(EC.presence_of_element_located(self.CONFIRM_DELETE_BTN))
         self.driver.execute_script("arguments[0].click();",confirm_btn)
         self.close_continue_popup()
+
+    def delete_role(self, name):
+        print("Intentando borrar rol:", name)
+        role_badge = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(
+            (By.XPATH, f"//span[contains(normalize-space(),'{name}') and .//button[@title='Eliminar rol']]")))
+        delete_btn = role_badge.find_element(By.XPATH, ".//button[@title='Eliminar rol']")
+        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", delete_btn)
+        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(delete_btn))
+        self.driver.execute_script("arguments[0].click();", delete_btn)
+        confirm_btn = WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(
+            (By.XPATH, "//button[contains(@class,'_confirmButton_') and normalize-space()='Eliminar']")))
+        self.driver.execute_script("arguments[0].click();", confirm_btn)
+        self.wait_role_gone(name)

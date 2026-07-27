@@ -7,8 +7,10 @@ Feature: Categorías
   Scenario: Crear, modificar y eliminar una categoría
     Then accedo a categorías
     And creo una nueva categoría
+    And creo un rol
     And la categoría aparece en el listado
     And modifico la categoría
     And la categoría modificada aparece en el listado
     And elimino la categoría
     And la categoría no aparece en el listado
+    And elimino el rol
