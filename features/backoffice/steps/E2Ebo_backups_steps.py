@@ -33,31 +33,21 @@ def step_validate_backup(context):
     timeout=30
     start=time.time()
     latest_file=None
-
     while time.time()-start < timeout:
         files=os.listdir(download_dir)
         json_files=[f for f in files if f.endswith(".json")]
         crdownload=[f for f in files if f.endswith(".crdownload")]
         if json_files and not crdownload:
-            latest_file=max(
-                json_files,
-                key=lambda f: os.path.getctime(os.path.join(download_dir,f))
-            )
+            latest_file=max(json_files,key=lambda f: os.path.getctime(os.path.join(download_dir,f)))
             break
         time.sleep(1)
-
     assert latest_file is not None,"❌ No se descargó el JSON del backup"
-
     file_path=os.path.join(download_dir,latest_file)
-
     with open(file_path,"r",encoding="utf-8") as f:
         data=json.load(f)
-
     assert "createdAt" in data,"❌ Falta createdAt en el backup"
-
     created_at=data["createdAt"]
     assert created_at is not None and len(created_at)>0,"❌ createdAt vacío"
-
     context.backup_file=file_path
 
 

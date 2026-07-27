@@ -11,9 +11,5 @@ class RestaurantPage_bo:
 
     def select_restaurant_bo(self, restaurant_name):
 
-        restaurant = self.wait.until(
-            EC.element_to_be_clickable(
-                (AppiumBy.XPATH, f'//android.widget.TextView[@text="{restaurant_name}"]')
-            )
-        )
+        restaurant = self.wait.until(EC.element_to_be_clickable((AppiumBy.XPATH, f'//android.widget.TextView[@text="{restaurant_name}"]')))
         restaurant.click()

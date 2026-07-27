@@ -92,23 +92,15 @@ class CartasPage_bo(BasePage, BaseListMixin, BaseCRUDMixin):
         self.click(self.SCAN_CARD)
 
     def upload_card_image(self, file_path):
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(self.FILE_INPUT)
-        ).send_keys(file_path)
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(self.FILE_INPUT)).send_keys(file_path)
 
     def scan_card(self):
-        button = WebDriverWait(self.driver, 20).until(
-            EC.element_to_be_clickable(self.SCAN_BUTTON)
-        )
+        button = WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable(self.SCAN_BUTTON))
         self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", button)
         self.driver.execute_script("arguments[0].click();", button)
 
     def verify_ai_error_message(self):
-        WebDriverWait(self.driver, 30).until(
-            EC.visibility_of_element_located(self.AI_ERROR_MESSAGE)
-        )
+        WebDriverWait(self.driver, 30).until(EC.visibility_of_element_located(self.AI_ERROR_MESSAGE))
 
     def cancel_scan(self):
-        WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(self.CANCEL_SCAN)
-        ).click()
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(self.CANCEL_SCAN)).click()

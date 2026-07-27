@@ -40,20 +40,14 @@ class BasePage:
         el.send_keys(str(value))
 
     def wait_visible(self, locator, timeout=15):
-        return WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(locator)
-        )
+        return WebDriverWait(self.driver, timeout).until(EC.visibility_of_element_located(locator))
 
     def wait_clickable(self, locator, timeout=15):
-        return WebDriverWait(self.driver, timeout).until(
-            EC.element_to_be_clickable(locator)
-        )
+        return WebDriverWait(self.driver, timeout).until(EC.element_to_be_clickable(locator))
 
     def exists(self, locator, timeout=5):
         try:
-            WebDriverWait(self.driver, timeout).until(
-                EC.presence_of_element_located(locator)
-            )
+            WebDriverWait(self.driver, timeout).until(EC.presence_of_element_located(locator))
             return True
         except:
             return False
