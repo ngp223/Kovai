@@ -14,6 +14,7 @@ Scenario: Crear y eliminar una mesa
     And la mesa aparece en el mapa
     And muevo la mesa
     And asigno una carta
+    And descargo e imprimo el QR de la mesa
     And elimino la mesa
     And la mesa no aparece en el mapa
     And elimino la tarifa
