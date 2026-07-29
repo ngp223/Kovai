@@ -21,8 +21,12 @@ def step_user_exists(context):
 
 @then("modifico el usuario")
 def step_modify_user(context):
-    context.users_page.modify_user(context.user_name,context.modified_user_name)
+    context.users_page.modify_user(context.user_name,context.modified_user_name,context.selected_role)
     context.user_name=context.modified_user_name
+
+@then("compruebo el rol personalizado")
+def step_check_custom_role(context):
+    context.users_page.check_custom_role(context.user_name,context.selected_role)
 
 @then("elimino el usuario")
 def step_delete_user(context):
