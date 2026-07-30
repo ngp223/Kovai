@@ -1,21 +1,26 @@
-from behave import then
+from behave import when, then
 import time
 
-@then("accedo a menus")
+@when("accedo a menus")
 def step(context):
     context.menus_page.open_menus()
 
-@then("creo un nuevo menu")
+@when("creo un nuevo menu")
 def step(context):
     name = f"menu_{int(time.time())}"
     context.menu_name = name
     context.menus_page.create(name)
 
-@then("el menu aparece en el listado")
+@when("modifico el menu y añado platos")
 def step(context):
-    assert context.menus_page.exists_item(context.menu_name), f"No aparece el menu {context.menu_name}"
+    context.menus_page.modify_menu(context.menu_name)
 
-@then("borro el menu creado")
+@then("el menu aparece con 3 productos")
+def step(context):
+    assert context.menus_page.check_products(context.menu_name, 3), \
+        f"El menú {context.menu_name} no tiene 3 productos"
+
+@when("borro el menu creado")
 def step(context):
     context.menus_page.delete_menu(context.menu_name)
 
