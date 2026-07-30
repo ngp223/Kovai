@@ -40,6 +40,27 @@ class CartasPage_bo(BasePage, BaseListMixin, BaseCRUDMixin):
         except Exception:
             pass
 
+    def create_without_name(self):
+        self.click(self.ADD_BTN)
+        self.click(self.RADIO)
+        self.click(self.CREATE)
+        time.sleep(1)
+
+    def verify_name_required_message(self):
+        input_name = WebDriverWait(self.driver, 5).until(
+            EC.presence_of_element_located(self.NAME)
+        )
+        message = input_name.get_attribute("validationMessage")
+        assert message in ("Rellene este campo", "Completa este campo"), \
+            f"Mensaje obtenido: {message}"
+
+    def edit_carta(self, name):
+        edit_btn = (By.XPATH, f"//tr[contains(.,'{name}')]//button[@title='Editar carta maestra']")
+        self.click(edit_btn)
+
+        
+        
+
     def edit_carta(self, name):
         edit_btn = (By.XPATH, f"//tr[contains(.,'{name}')]//button[@title='Editar carta maestra']")
         self.click(edit_btn)
