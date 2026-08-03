@@ -12,7 +12,10 @@ class ReservationPage:
     GUEST = ('xpath', '//android.widget.TextView[@text="3"]')
     ACCEPT_GUESTS = ('xpath', '//android.view.ViewGroup[@content-desc="Aceptar"]/android.view.ViewGroup')
 
-    PRODUCT_PAELLA = ('xpath', '//android.widget.TextView[@text="Paella de Marisco"]')
+    PRODUCT_ARROZ_BOGAVANTE = (
+        'xpath',
+        '//android.view.ViewGroup[contains(@content-desc,"Arroz con Bogavante")]'
+    )
     ADD_BUTTON = ('xpath', '//android.view.ViewGroup[@content-desc="Añadir al pedido"]/android.view.ViewGroup')
 
     CART_BUTTON = ('xpath', '//android.widget.TextView[@text=""]/ancestor::android.view.ViewGroup[1]')
@@ -31,16 +34,10 @@ class ReservationPage:
         element.click()
 
     def wait_quantity(self, qty, timeout=15):
-        """
-        Espera hasta que aparezca en pantalla el contador con el valor esperado.
-        """
         xpath = f'//android.widget.TextView[@text="{qty}"]'
-
         WebDriverWait(self.driver, timeout).until(
             lambda d: len(d.find_elements(AppiumBy.XPATH, xpath)) > 0
         )
-
-        # pequeña estabilización por si la app refresca
         time.sleep(0.5)
 
     def select_table_b1(self):
@@ -53,24 +50,18 @@ class ReservationPage:
     def click_accept_guests(self):
         self.click(AppiumBy.XPATH, self.ACCEPT_GUESTS[1])
 
-    def select_product_paella(self):
-        self.click(AppiumBy.XPATH, self.PRODUCT_PAELLA[1])
+    def select_product_arroz_bogavante(self):
+        self.click(AppiumBy.XPATH, self.PRODUCT_ARROZ_BOGAVANTE[1])
 
     def click_add_product(self):
         self.click(AppiumBy.XPATH, self.ADD_BUTTON[1])
-
-        # Esperar a que el contador muestre 1
         self.wait_quantity("1")
 
     def increase_product(self):
-        # 1 -> 2
         self.click(AppiumBy.XPATH, self.CART_BUTTON[1])
         self.wait_quantity("2")
-
-        # 2 -> 3
         self.click(AppiumBy.XPATH, self.CART_BUTTON[1])
         self.wait_quantity("3")
-
         print("✅ Cantidad confirmada en 3")
 
     def click_realizar_pago(self):

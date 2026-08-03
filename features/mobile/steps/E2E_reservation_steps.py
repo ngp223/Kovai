@@ -22,7 +22,8 @@ def step_impl(context):
 
 @when("selecciono el producto")
 def step_impl(context):
-    context.reservation.select_product_paella()
+    context.reservation.select_product_arroz_bogavante()
+
 
 
 @when("añado el producto al pedido")
