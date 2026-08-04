@@ -4,7 +4,7 @@ from features.mobile.pages.login_page import LoginPage
 from features.mobile.pages.restaurant_page import RestaurantPage
 from features.mobile.data.users import USERS
 from features.mobile.data.restaurants import RESTAURANTS
-from features.mobile.pages.E2E_reservation_pages import ReservationPage
+from features.mobile.pages.E2E_reservation_page import ReservationPage
 
 
 # -------------------------------------------------

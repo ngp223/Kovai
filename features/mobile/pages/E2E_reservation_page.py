@@ -8,18 +8,14 @@ class ReservationPage:
 
     VENTAS_VIEW = ('xpath', "//*[contains(@text,'VENTAS')]")
     TABLE_B1 = ('xpath', '//android.view.ViewGroup[@content-desc="B1"]')
-
     GUEST = ('xpath', '//android.widget.TextView[@text="3"]')
     ACCEPT_GUESTS = ('xpath', '//android.view.ViewGroup[@content-desc="Aceptar"]/android.view.ViewGroup')
-
     PRODUCT_ARROZ_BOGAVANTE = (
         'xpath',
         '//android.view.ViewGroup[contains(@content-desc,"Arroz con Bogavante")]'
     )
     ADD_BUTTON = ('xpath', '//android.view.ViewGroup[@content-desc="Añadir al pedido"]/android.view.ViewGroup')
-
     CART_BUTTON = ('xpath', '//android.widget.TextView[@text=""]/ancestor::android.view.ViewGroup[1]')
-
     REALIZAR_PAGO_BUTTON = ('xpath', '//android.widget.TextView[@text="Realizar Pago"]')
     CONFIRMAR_PAGO_BUTTON = ('xpath', '//android.widget.TextView[@text="Confirmar Pago"]')
     FINALIZAR_BUTTON = ('xpath', '//android.widget.TextView[@text="Finalizar"]')
