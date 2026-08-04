@@ -1,6 +1,5 @@
 from behave import when, then
-
-from features.mobile.pages.E2E_reservation_pages import ReservationPage
+from features.mobile.pages.E2E_reservation_page import ReservationPage
 from features.mobile.pages.logout_page import LogoutPage
 
 
