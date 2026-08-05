@@ -8,3 +8,4 @@ Feature: Menus
 
     When accedo al módulo de cartas
     Then creo una nueva carta con datos válidos
+    # And borro la carta creada no hay sincronizacion correcta funcionando, parece q no se puede
