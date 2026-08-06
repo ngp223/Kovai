@@ -7,7 +7,7 @@ class ReservationPage:
 
     VENTAS_VIEW=(AppiumBy.XPATH,"//*[contains(@text,'VENTAS')]")
     TABLE_b1=(AppiumBy.XPATH,'//android.view.ViewGroup[@content-desc="B1"]')
-    GUEST=(AppiumBy.ANDROID_UIAUTOMATOR,'new UiSelector().text("3").instance(1)')
+    GUEST=(AppiumBy.XPATH,'//android.widget.TextView[@text="3"]/ancestor::*[@clickable="true"][1]')
     ACCEPT_GUESTS=(AppiumBy.ANDROID_UIAUTOMATOR,'new UiSelector().text("Aceptar")')
     PRODUCT_ARROZ_BOGAVANTE=(AppiumBy.XPATH,'//android.view.ViewGroup[contains(@content-desc,"Arroz con Bogavante")]')
     ADD_BUTTON=(AppiumBy.XPATH,'//android.view.ViewGroup[@content-desc="Añadir al pedido"]/android.view.ViewGroup')
@@ -20,12 +20,16 @@ class ReservationPage:
         self.driver=driver
 
     def click(self,by,locator):
-        element=WebDriverWait(self.driver,10).until(EC.element_to_be_clickable((by,locator)))
+        element=WebDriverWait(self.driver,10).until(
+            EC.element_to_be_clickable((by,locator))
+        )
         element.click()
 
     def wait_quantity(self,qty,timeout=15):
         xpath=f'//android.widget.TextView[@text="{qty}"]'
-        WebDriverWait(self.driver,timeout).until(lambda d:len(d.find_elements(AppiumBy.XPATH,xpath))>0)
+        WebDriverWait(self.driver,timeout).until(
+            lambda d:len(d.find_elements(AppiumBy.XPATH,xpath))>0
+        )
         time.sleep(0.5)
 
     def select_table_b1(self):
