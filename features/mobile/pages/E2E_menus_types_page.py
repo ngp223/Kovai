@@ -20,11 +20,11 @@ class CardsPage:
         self.carta_creada=None
 
     def click(self,by,locator,timeout=15):
-        element=WebDriverWait(self.driver,timeout).until(lambda d:d.find_element(by,locator))
+        element=WebDriverWait(self.driver,timeout).until(EC.element_to_be_clickable((by,locator)))
         element.click()
 
     def fill(self,by,locator,value,timeout=15):
-        element=WebDriverWait(self.driver,timeout).until(lambda d:d.find_element(by,locator))
+        element=WebDriverWait(self.driver,timeout).until(EC.visibility_of_element_located((by,locator)))
         element.clear()
         element.send_keys(value)
 
@@ -42,25 +42,49 @@ class CardsPage:
         self.click(*self.SIGUIENTE)
         self.click(*self.FINALIZAR_Y_GUARDAR)
 
+        WebDriverWait(self.driver,15).until(EC.invisibility_of_element_located(self.FINALIZAR_Y_GUARDAR))
+
+        locator_carta=(AppiumBy.ANDROID_UIAUTOMATOR,f'new UiSelector().text("{self.carta_creada}")')
+
+        WebDriverWait(self.driver,30).until(EC.visibility_of_element_located(locator_carta))
+
     def delete_created_card(self):
-        carta=WebDriverWait(self.driver,30).until(EC.presence_of_element_located((AppiumBy.ANDROID_UIAUTOMATOR,f'new UiSelector().text("{self.carta_creada}")')))
+        if not self.carta_creada:
+            raise Exception("No existe carta creada para borrar")
+
+        locator_carta=(AppiumBy.ANDROID_UIAUTOMATOR,f'new UiSelector().text("{self.carta_creada}")')
+
+        WebDriverWait(self.driver,30).until(EC.visibility_of_element_located(locator_carta))
+
+        carta=self.driver.find_element(*locator_carta)
+
         carta_pos=carta.location
+
         papeleras=self.driver.find_elements(AppiumBy.ANDROID_UIAUTOMATOR,'new UiSelector().text("")')
+
         if not papeleras:
             raise Exception("No se encontraron papeleras")
+
         papelera_correcta=None
-        distancia_minima=999999
+        distancia_minima=float("inf")
+
         for papelera in papeleras:
             try:
                 papelera_pos=papelera.location
                 distancia=abs(papelera_pos["y"]-carta_pos["y"])
+
                 if distancia<distancia_minima:
                     distancia_minima=distancia
                     papelera_correcta=papelera
+
             except:
                 continue
+
         if papelera_correcta is None:
             raise Exception(f"No encontrada papelera para {self.carta_creada}")
+
         papelera_correcta.click()
+
         eliminar=WebDriverWait(self.driver,15).until(EC.element_to_be_clickable((AppiumBy.ANDROID_UIAUTOMATOR,'new UiSelector().description(", Eliminar")')))
+
         eliminar.click()
