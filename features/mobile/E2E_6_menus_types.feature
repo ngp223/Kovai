@@ -5,7 +5,6 @@ Feature: Menus
     And el usuario "admin" está logueado en el POS
 
   Scenario: Crear una nueva carta
-
     When accedo al módulo de cartas
     Then creo una nueva carta con datos válidos
     And borro la carta creada 
