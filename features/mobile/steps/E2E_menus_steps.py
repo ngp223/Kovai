@@ -18,7 +18,7 @@ def step_impl(context):
     assert context.menus_page.nombre_menu_creado is not None
 
 
-@when("borro el menú creado")
+@then("borro el menú creado")
 def step_impl(context):
     context.menus_page.delete_menu()
 

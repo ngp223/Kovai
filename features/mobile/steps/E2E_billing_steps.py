@@ -9,7 +9,7 @@ def step_impl(context):
     context.billing_page.open_billing()
 
 
-@when("creo una nueva factura con datos válidos")
+@then("creo una nueva factura con datos válidos")
 def step_impl(context):
 
     context.billing_page.create_new_invoice()
