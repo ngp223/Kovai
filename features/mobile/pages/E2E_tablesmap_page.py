@@ -3,6 +3,7 @@ import time
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import StaleElementReferenceException
 
 class TablesMapPage:
     TABLESMAP=(AppiumBy.ANDROID_UIAUTOMATOR,'new UiSelector().text("Mapa de mesas")')
@@ -37,12 +38,6 @@ class TablesMapPage:
         element.click()
         return element
 
-    def fill(self,by,locator,value,timeout=15):
-        element=WebDriverWait(self.driver,timeout).until(lambda d:d.find_element(by,locator))
-        element.click()
-        element.send_keys(value)
-        return element
-
     def open_tablesmap(self):
         self.driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR,'new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().text("Mapa de mesas"))')
         self.click(*self.TABLESMAP)
@@ -65,9 +60,15 @@ class TablesMapPage:
         self.click(*self.CREAR_ZONA)
 
     def seleccionar_zona_creada(self):
-        zona_locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.zona_creada}")')
-        zona = WebDriverWait(self.driver, 30).until(lambda d: d.find_element(*zona_locator))
-        zona.click()
+        zona_locator=(AppiumBy.ANDROID_UIAUTOMATOR,f'new UiSelector().text("{self.zona_creada}")')
+        def buscar_y_clickar(driver):
+            try:
+                zona=driver.find_element(*zona_locator)
+                zona.click()
+                return True
+            except StaleElementReferenceException:
+                return False
+        WebDriverWait(self.driver,30,poll_frequency=0.3).until(buscar_y_clickar)
         time.sleep(1)
 
     def crear_mesa(self):
