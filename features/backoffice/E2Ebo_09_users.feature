@@ -1,5 +1,5 @@
 Feature: Usuarios
-
+# se muestra un INTERNAL SERVER ERROR
   Background:
     Given la web está abierta
     When hago login con credenciales válidas
