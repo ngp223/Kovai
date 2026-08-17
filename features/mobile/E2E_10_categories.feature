@@ -7,11 +7,11 @@ Feature: Categorías
   Scenario: 
     Then accedo a las categorías
     And creo una categoría
-    #And creo el rol
+    And creo el rol
     And la categoría aparece listada
     #And modifico la categoría creada
     #And la categoría modificada listada
+    And elimino el rol creado
     And elimino esa categoría
     And la categoría no aparece listada
-    #And elimino el rol creado
 
