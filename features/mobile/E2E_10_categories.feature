@@ -11,7 +11,8 @@ Feature: Categorías
     And la categoría aparece listada
     #And modifico la categoría creada
     #And la categoría modificada listada
-    And elimino el rol creado
     And elimino esa categoría
     And la categoría no aparece listada
+    And elimino el rol creado
+    And el rol no aparece listado
 
