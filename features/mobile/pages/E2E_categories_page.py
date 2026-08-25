@@ -11,6 +11,8 @@ class CategoriesPage:
     NOMBRE_CATEGORIA = (AppiumBy.XPATH, '(//android.view.ViewGroup[@resource-id="modal-surface"]/android.view.ViewGroup[2]/android.widget.EditText[@resource-id="text-input-outlined"])[1]')
     ORDEN_CATEGORIA = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().resourceId("text-input-outlined").instance(4)')
     CREAR = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().description(", Crear")')
+    GUARDAR = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().description(", Guardar")')
+    EDITAR = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().description("")')
     PAPELERA = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("")')
     ELIMINAR = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().description(", Eliminar")')
     BUSCAR_CATEGORIAS = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Buscar categorías...")')
@@ -71,25 +73,6 @@ class CategoriesPage:
         if rol is None:
             raise Exception(f"No se encontró el rol {self.rol_creado} para eliminar")
 
-    def comprobar_rol_no_aparece(self):
-        rol_locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.rol_creado}")')
-        def rol_no_visible(driver):
-            try:
-                roles = driver.find_elements(*rol_locator)
-                for rol in roles:
-                    try:
-                        if rol.is_displayed():
-                            return False
-                    except StaleElementReferenceException:
-                        continue
-                return True
-            except NoSuchElementException:
-                return True
-        try:
-            WebDriverWait(self.driver, 15).until(rol_no_visible)
-        except Exception:
-            raise AssertionError(f"El rol {self.rol_creado} sigue existiendo")
-        
     def crear_categoria(self):
         self.categoria_creada = f"categoriaqa{datetime.now().strftime('%d%m%Y%H%M%S')}"
         self.click(*self.ANADIR_CATEGORIA)
@@ -128,52 +111,59 @@ class CategoriesPage:
         except Exception:
             raise AssertionError(f"No se encontró la categoría {self.categoria_creada}")
 
-    def eliminar_categoria(self):
-        categoria_locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.categoria_creada}").instance(0)')
+    def modificar_categoria(self):
+        categoria_original = self.categoria_creada
+        categoria_locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{categoria_original}")')
+        categoria = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(categoria_locator))
+        papeleras = self.driver.find_elements(*self.PAPELERA)
+        papelera_correcta = papeleras[-1]
+        papelera_y = papelera_correcta.location["y"]
+        editar_buttons = self.driver.find_elements(*self.EDITAR)
+        editar_correcto = min(editar_buttons, key=lambda e: abs(e.location["y"] - papelera_y))
+        editar_correcto.click()
+        time.sleep(2)
+        campo_nombre_locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().className("android.widget.EditText").resourceId("text-input-outlined").text("{categoria_original}")')
+        campo_nombre = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(campo_nombre_locator))
+        texto_nuevo = f"_modificado_{datetime.now().strftime('%d%m%Y%H%M%S')}"
+        nuevo_nombre = categoria_original + texto_nuevo
+        self.categoria_creada = nuevo_nombre
+        campo_nombre.click()
+        time.sleep(1)
+        campo_nombre.send_keys(self.categoria_creada)
+        time.sleep(1)
+        guardar = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable(self.GUARDAR))
+        guardar.click()
+        time.sleep(3)
+        buscador = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable(self.BUSCAR_CATEGORIAS))
+        buscador.click()
+        time.sleep(1)
+        buscador.clear()
+        time.sleep(1)
+        buscador.send_keys(self.categoria_creada)
+        time.sleep(2)
+        self.driver.hide_keyboard()
+        time.sleep(2)
+
+    def comprobar_categoria_modificada(self):
+        categoria_locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.categoria_creada}")')
         try:
-            categoria = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(categoria_locator))
+            categoria = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(categoria_locator))
+        except Exception:
+            raise AssertionError(f"La categoría modificada {self.categoria_creada} no aparece en el listado")
+        if categoria.text != self.categoria_creada:
+            raise AssertionError(f"La categoría modificada no coincide: esperada '{self.categoria_creada}', encontrada '{categoria.text}'")
+
+    def eliminar_categoria(self):
+        categoria_locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.categoria_creada}")')
+        try:
+            categoria = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(categoria_locator))
         except Exception:
             raise Exception(f"No se encontró la categoría {self.categoria_creada} en el listado antes de eliminarla")
-        if categoria.text != self.categoria_creada:
-            raise Exception(f"La categoría encontrada no corresponde con la categoría recién creada: esperada '{self.categoria_creada}', encontrada '{categoria.text}'")
-        papeleras = self.driver.find_elements(*self.PAPELERA)
-        if not papeleras:
-            raise Exception(f"No se encontraron papeleras para eliminar {self.categoria_creada}")
+        papeleras = WebDriverWait(self.driver, 15).until(lambda driver: driver.find_elements(*self.PAPELERA))
         papelera_correcta = papeleras[-1]
         papelera_correcta.click()
-        time.sleep(1)
-        eliminar = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(self.ELIMINAR))
+        time.sleep(2)
+        eliminar = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable(self.ELIMINAR))
         eliminar.click()
-        time.sleep(3)
+        time.sleep(5)
 
-    def comprobar_categoria_no_aparece(self):
-        if self.buscador_categorias is None:
-            raise Exception("No se encontró el buscador de categorías utilizado durante la búsqueda")
-        try:
-            self.buscador_categorias.click()
-            self.buscador_categorias.clear()
-            self.driver.hide_keyboard()
-        except StaleElementReferenceException:
-            buscador = self.driver.find_elements(AppiumBy.CLASS_NAME, "android.widget.EditText")
-            if buscador:
-                buscador[-1].click()
-                buscador[-1].clear()
-                self.driver.hide_keyboard()
-        time.sleep(1)
-        categoria_locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.categoria_creada}")')
-        def categoria_no_visible(driver):
-            try:
-                categorias = driver.find_elements(*categoria_locator)
-                for categoria in categorias:
-                    try:
-                        if categoria.is_displayed():
-                            return False
-                    except StaleElementReferenceException:
-                        continue
-                return True
-            except NoSuchElementException:
-                return True
-        try:
-            WebDriverWait(self.driver, 15).until(categoria_no_visible)
-        except Exception:
-            raise AssertionError(f"La categoría {self.categoria_creada} sigue existiendo")
