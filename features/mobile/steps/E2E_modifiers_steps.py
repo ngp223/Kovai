@@ -14,6 +14,14 @@ def step_impl(context):
 def step_impl(context):
     context.modifiers.esperar_modificador_creado()
 
+@then('modifico el modificador')
+def step_impl(context):
+    context.modifiers.modificar_modificador()
+
+@then('el modificador modificado aparece listado')
+def step_impl(context):
+    context.modifiers.comprobar_modificador_modificado()
+
 @then('elimino el modificador')
 def step_impl(context):
     context.modifiers.eliminar_modificador()
