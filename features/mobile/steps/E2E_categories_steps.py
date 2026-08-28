@@ -1,7 +1,7 @@
-from behave import then
+from behave import then,when
 from features.mobile.pages.E2E_categories_page import CategoriesPage
 
-@then('accedo a las categorías')
+@when('accedo a las categorías')
 def step_impl(context):
     context.categories = CategoriesPage(context.driver)
     context.categories.acceder_categorias()

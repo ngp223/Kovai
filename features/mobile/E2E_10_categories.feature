@@ -6,8 +6,8 @@ Feature: Categorías
     And el usuario "admin" está logueado en el POS
 
   Scenario: 
-    Then accedo a las categorías
-    And creo una categoría
+    When accedo a las categorías
+    Then creo una categoría
     And creo el rol
     And la categoría aparece listada
     And modifico la categoría creada

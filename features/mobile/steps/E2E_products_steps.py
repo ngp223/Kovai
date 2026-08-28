@@ -1,7 +1,7 @@
-from behave import then
+from behave import then,when
 from features.mobile.pages.E2E_products_page import ProductsPage
 
-@then('accedo a los productos')
+@when('accedo a los productos')
 def step_impl(context):
     context.products = ProductsPage(context.driver)
     context.products.acceder_productos()

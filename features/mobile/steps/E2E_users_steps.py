@@ -1,7 +1,7 @@
-from behave import then
+from behave import then,when
 from features.mobile.pages.E2E_users_page import UsersPage
 
-@then('accedo a usuariostab')
+@when('accedo a usuariostab')
 def step_impl(context):
     context.users=UsersPage(context.driver)
     context.users.acceder_usuarios()

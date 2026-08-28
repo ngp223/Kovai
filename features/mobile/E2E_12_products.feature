@@ -6,8 +6,8 @@
     And el usuario "admin" está logueado en el POS
 
   Scenario: 
-    Then accedo a los productos
-    And creo un producto
+    When accedo a los productos
+    Then creo un producto
     And el producto aparece listado
     And modifico ese producto
     And el producto modificado aparece listado

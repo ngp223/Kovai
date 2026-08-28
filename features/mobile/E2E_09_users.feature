@@ -6,8 +6,8 @@ Feature: Usuarios
     And el usuario "admin" está logueado en el POS
 
   Scenario: Crear, modificar y eliminar un usuario
-    Then accedo a usuariostab
-    And creo un nuevo usuariotab
+    When accedo a usuariostab
+    Then creo un nuevo usuariotab
     #And el usuariotab aparece en el listado
     #And modifico el usuariotab
     #And compruebo el rol personalizado del usuariotab

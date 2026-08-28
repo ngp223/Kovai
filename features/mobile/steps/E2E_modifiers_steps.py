@@ -1,7 +1,7 @@
-from behave import then
+from behave import then,when
 from features.mobile.pages.E2E_modifiers_page import ModifiersPage
 
-@then('accedo a los modificadores')
+@when('accedo a los modificadores')
 def step_impl(context):
     context.modifiers = ModifiersPage(context.driver)
     context.modifiers.acceder_modificadores()
