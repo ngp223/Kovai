@@ -1,3 +1,4 @@
+@E2E
 Feature: Cash Closure POS
 
   Background:

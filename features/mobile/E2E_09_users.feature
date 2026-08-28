@@ -1,3 +1,4 @@
+@E2E
 Feature: Usuarios 
 # El usuario no se crea
   Background:

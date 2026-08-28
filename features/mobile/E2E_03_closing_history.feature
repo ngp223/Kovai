@@ -1,3 +1,4 @@
+@E2E
 Feature: Historial de Cierres
 
   Background:

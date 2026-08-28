@@ -1,4 +1,4 @@
- 
+ @E2E
  Feature: Categorías
 
   Background:
