@@ -14,6 +14,7 @@ class CategoriesPage:
     GUARDAR = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().description(", Guardar")')
     EDITAR = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().description("")')
     PAPELERA = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("")')
+    ROL_ELIMINADO = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Rol eliminado")')
     ELIMINAR = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().description(", Eliminar")')
     BUSCAR_CATEGORIAS = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Buscar categorías...")')
     NOMBRE_ROL = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Ej: COCINA_CALIENTE")')
@@ -48,30 +49,102 @@ class CategoriesPage:
         rol_locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.rol_creado}")')
         size = self.driver.get_window_size()
         x = size["width"] // 2
+
         for _ in range(15):
             try:
-                rol = self.driver.find_element(*rol_locator)
-                if rol.is_displayed():
-                    print(f"ROL ENCONTRADO: {rol.text}")
-                    rol_y = rol.location["y"]
-                    papeleras = self.driver.find_elements(*self.PAPELERA)
-                    if papeleras:
-                        papelera = min(papeleras, key=lambda p: abs(p.location["y"] - rol_y))
-                        print("PAPELERA ENCONTRADA")
-                        papelera.click()
-                        time.sleep(5)
-                        return rol
+                rol = WebDriverWait(self.driver, 3).until(EC.visibility_of_element_located(rol_locator))
+                rol_bounds = rol.get_attribute("bounds")
+
+                print(f"ROL ENCONTRADO: {self.rol_creado}")
+                print(f"BOUNDS ROL: {rol_bounds}")
+
+                if not rol_bounds:
+                    raise Exception("No se pudieron obtener los bounds del rol")
+
+                partes_rol = rol_bounds.replace("[", "").replace("]", ",").split(",")
+                rol_x1 = int(partes_rol[0])
+                rol_y1 = int(partes_rol[1])
+                rol_x2 = int(partes_rol[2])
+                rol_y2 = int(partes_rol[3])
+
+                print(f"FILA DEL ROL: X={rol_x1}-{rol_x2} Y={rol_y1}-{rol_y2}")
+
+                elementos = self.driver.find_elements(AppiumBy.CLASS_NAME, "android.widget.TextView")
+                candidatos = []
+
+                for indice, elemento in enumerate(elementos):
+                    try:
+                        bounds = elemento.get_attribute("bounds")
+                        texto = elemento.text
+
+                        if not bounds:
+                            continue
+
+                        partes = bounds.replace("[", "").replace("]", ",").split(",")
+                        elemento_x1 = int(partes[0])
+                        elemento_y1 = int(partes[1])
+                        elemento_x2 = int(partes[2])
+                        elemento_y2 = int(partes[3])
+
+                        misma_fila = elemento_y1 == rol_y1 and elemento_y2 == rol_y2
+                        esta_a_la_derecha = elemento_x1 > rol_x2
+                        tiene_tamano_de_icono = (elemento_x2 - elemento_x1) <= 40 and (elemento_y2 - elemento_y1) <= 40
+
+                        if misma_fila and esta_a_la_derecha and tiene_tamano_de_icono:
+                            candidatos.append((elemento_x1, elemento_x2, elemento))
+
+                            print(f"CANDIDATO {indice}: TEXTO='{texto}' BOUNDS={bounds}")
+
+                    except (StaleElementReferenceException, NoSuchElementException, ValueError):
+                        continue
+
+                if not candidatos:
+                    print(f"NO SE ENCONTRARON BOTONES DE LA FILA DEL ROL: {self.rol_creado}")
+                else:
+                    candidatos.sort(key=lambda candidato: candidato[0])
+                    papelera_correcta = candidatos[-1][2]
+                    papelera_bounds = papelera_correcta.get_attribute("bounds")
+
+                    print(f"BOTONES DE LA FILA ENCONTRADOS: {len(candidatos)}")
+                    print(f"BOTÓN MÁS A LA DERECHA SELECCIONADO: {papelera_bounds}")
+                    print(f"PULSANDO POSIBLE PAPELERA DEL ROL: {self.rol_creado}")
+
+                    papelera_correcta.click()
+
+                    print(f"CLICK REALIZADO SOBRE EL BOTÓN DE ELIMINAR DEL ROL: {self.rol_creado}")
+
+                    return True
+
             except (NoSuchElementException, StaleElementReferenceException):
                 pass
+
             self.driver.swipe(x, int(size["height"] * 0.75), x, int(size["height"] * 0.30), 500)
             time.sleep(1)
+
         print(f"ROL NO ENCONTRADO: {self.rol_creado}")
-        return None
+        return False
 
     def eliminar_rol(self):
-        rol = self.buscar_rol()
-        if rol is None:
-            raise Exception(f"No se encontró el rol {self.rol_creado} para eliminar")
+        papelera_pulsada = self.buscar_rol()
+
+        if not papelera_pulsada:
+            raise AssertionError(f"No se pudo encontrar el botón de eliminar del rol {self.rol_creado}")
+
+        print("ESPERANDO MENSAJE 'Rol eliminado'...")
+
+        try:
+            WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located(self.ROL_ELIMINADO))
+            print(f"ROL ELIMINADO CORRECTAMENTE: {self.rol_creado}")
+        except Exception:
+            raise AssertionError(f"No apareció el mensaje 'Rol eliminado' después de pulsar el botón de eliminar del rol {self.rol_creado}")
+
+        print("ESPERANDO A QUE DESAPAREZCA EL ROL DEL LISTADO...")
+
+        try:
+            WebDriverWait(self.driver, 20).until(EC.invisibility_of_element_located((AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.rol_creado}")')))
+            print(f"ROL YA NO APARECE EN EL LISTADO: {self.rol_creado}")
+        except Exception:
+            raise AssertionError(f"El rol {self.rol_creado} sigue apareciendo después de recibir 'Rol eliminado'")
 
     def crear_categoria(self):
         self.categoria_creada = f"categoriaqa{datetime.now().strftime('%d%m%Y%H%M%S')}"
@@ -94,20 +167,27 @@ class CategoriesPage:
         self.buscador_categorias.send_keys(self.categoria_creada)
         self.driver.hide_keyboard()
         time.sleep(1)
+
         categoria_locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.categoria_creada}")')
+
         try:
             categoria = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(categoria_locator))
+
             if categoria.is_displayed():
                 return categoria
+
         except (NoSuchElementException, StaleElementReferenceException):
             return None
+
         return None
 
     def esperar_categoria_creada(self):
         try:
             categoria = self.buscar_categoria()
+
             if categoria is None:
                 raise Exception(f"No se encontró la categoría {self.categoria_creada}")
+
         except Exception:
             raise AssertionError(f"No se encontró la categoría {self.categoria_creada}")
 
@@ -122,18 +202,23 @@ class CategoriesPage:
         editar_correcto = min(editar_buttons, key=lambda e: abs(e.location["y"] - papelera_y))
         editar_correcto.click()
         time.sleep(2)
+
         campo_nombre_locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().className("android.widget.EditText").resourceId("text-input-outlined").text("{categoria_original}")')
         campo_nombre = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(campo_nombre_locator))
+
         texto_nuevo = f"_modificado_{datetime.now().strftime('%d%m%Y%H%M%S')}"
         nuevo_nombre = categoria_original + texto_nuevo
         self.categoria_creada = nuevo_nombre
+
         campo_nombre.click()
         time.sleep(1)
         campo_nombre.send_keys(self.categoria_creada)
         time.sleep(1)
+
         guardar = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable(self.GUARDAR))
         guardar.click()
         time.sleep(3)
+
         buscador = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable(self.BUSCAR_CATEGORIAS))
         buscador.click()
         time.sleep(1)
@@ -146,24 +231,30 @@ class CategoriesPage:
 
     def comprobar_categoria_modificada(self):
         categoria_locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.categoria_creada}")')
+
         try:
             categoria = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(categoria_locator))
+
         except Exception:
             raise AssertionError(f"La categoría modificada {self.categoria_creada} no aparece en el listado")
+
         if categoria.text != self.categoria_creada:
             raise AssertionError(f"La categoría modificada no coincide: esperada '{self.categoria_creada}', encontrada '{categoria.text}'")
 
     def eliminar_categoria(self):
         categoria_locator = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.categoria_creada}")')
+
         try:
             categoria = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(categoria_locator))
+
         except Exception:
             raise Exception(f"No se encontró la categoría {self.categoria_creada} en el listado antes de eliminarla")
+
         papeleras = WebDriverWait(self.driver, 15).until(lambda driver: driver.find_elements(*self.PAPELERA))
         papelera_correcta = papeleras[-1]
         papelera_correcta.click()
         time.sleep(2)
+
         eliminar = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable(self.ELIMINAR))
         eliminar.click()
         time.sleep(5)
-
