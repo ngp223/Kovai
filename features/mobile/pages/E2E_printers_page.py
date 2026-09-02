@@ -38,29 +38,8 @@ class PrintersPage:
         self.scroll_pantalla_impresoras()
 
     def scroll_pantalla_impresoras(self):
-        try:
-            WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located(self.APLICAR_CAMBIOS))
-            return
-        except Exception:
-            pass
-
-        size = self.driver.get_window_size()
-        width = size["width"]
-        height = size["height"]
-        start_x = width // 2
-        start_y = int(height * 0.75)
-        end_y = int(height * 0.25)
-
-        for _ in range(5):
-            try:
-                WebDriverWait(self.driver, 2).until(EC.visibility_of_element_located(self.APLICAR_CAMBIOS))
-                return
-            except Exception:
-                self.driver.swipe(start_x, start_y, start_x, end_y, 500)
-                time.sleep(1)
-
-        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(self.APLICAR_CAMBIOS))
-
+        while not self.driver.find_elements(*self.APLICAR_CAMBIOS):
+            self.driver.swipe(800, 1200, 800, 500, 500)
     def modificar_campo(self, locator, valor):
         self.cerrar_teclado()
         campo = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable(locator))
