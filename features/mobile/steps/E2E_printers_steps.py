@@ -14,6 +14,7 @@ def step_impl(context):
 @then("los campos han sido modificados")
 def step_impl(context):
     context.printers.comprobar_campos_modificados()
+    context.printers.salir_y_volver_impresoras()
 
 @then("los campos han sido restablecidos")
 def step_impl(context):
