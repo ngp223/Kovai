@@ -4,10 +4,10 @@ from features.mobile.pages.logout_page import LogoutPage
 
 @when("está en la pantalla de ventas")
 def step_impl(context):
-    context.reservation=ReservationPage(context.driver)
+    context.reservation = ReservationPage(context.driver)
 
 @when('selecciono la mesa "{table}"')
-def step_impl(context,table):
+def step_impl(context, table):
     context.reservation.select_table_b1()
 
 @when("selecciono comensales")

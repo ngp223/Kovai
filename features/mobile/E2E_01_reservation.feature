@@ -4,10 +4,10 @@ Feature: Reservations POS
   Background:
     Given la app está abierta
     And el usuario "admin" está logueado en el POS
-    And está en la pantalla de ventas
 
   Scenario: Venta completa con pago
-    When selecciono la mesa "B1"
+    When está en la pantalla de ventas
+    And selecciono la mesa "B1"
     And selecciono comensales
     And selecciono el producto
     And añado el producto al pedido

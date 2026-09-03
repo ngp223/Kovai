@@ -1,10 +1,9 @@
 @E2E
 Feature: Cash Closure POS
 
-  Background:
-    Given la app está abierta
-    And el usuario "admin" está logueado en el POS
-    And está en la pantalla de ventas
+Background:
+  Given la app está abierta
+  And el usuario "admin" está logueado en el POS
 
   Scenario: Cierre de caja completo
     When accedo al cierre de caja
