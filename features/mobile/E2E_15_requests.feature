@@ -1,4 +1,4 @@
- @E2E
+ # No lo ejecuto, xq no se puede borrar después
  Feature: Requests
 
   Background:
@@ -7,8 +7,7 @@
 
   Scenario: 
     When accedo a peticiones
-    Then creo petición
-    And verifico la creación de la petición
-    And modifico petición
-    And verifico petición modificada
-    #And borro la petición --> no se puede
+    #Then creo petición
+    #And verifico la creación de la petición
+    #And modifico petición
+    #And verifico petición modificada
