@@ -189,9 +189,15 @@ class CategoriesPage:
             WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(categoria_locator))
         except Exception:
             raise Exception(f"No se encontró la categoría {self.categoria_creada} en el listado antes de eliminarla")
-        papeleras = WebDriverWait(self.driver, 15).until(lambda driver: driver.find_elements(*self.PAPELERA))
-        papelera_correcta = papeleras[-1]
-        papelera_correcta.click()
+        WebDriverWait(self.driver, 15).until(lambda driver: len(driver.find_elements(*self.PAPELERA)) > 0)
+        try:
+            papeleras = self.driver.find_elements(*self.PAPELERA)
+            papelera_correcta = papeleras[-1]
+            WebDriverWait(self.driver, 5).until(lambda driver: papelera_correcta.is_displayed())
+            papelera_correcta.click()
+        except StaleElementReferenceException:
+            papeleras = self.driver.find_elements(*self.PAPELERA)
+            papeleras[-1].click()
         time.sleep(2)
         eliminar = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable(self.ELIMINAR))
         eliminar.click()

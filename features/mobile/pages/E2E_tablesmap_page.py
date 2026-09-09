@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException
 
+
 class TablesMapPage:
     TABLESMAP=(AppiumBy.ANDROID_UIAUTOMATOR,'new UiSelector().text("Mapa de mesas")')
     GESTIONAR_TARIFAS=(AppiumBy.XPATH,'//android.widget.TextView[@text="Gestionar Tarifas"]')
@@ -46,15 +47,18 @@ class TablesMapPage:
         self.tarifa_creada=f"TarifaQA{datetime.now().strftime('%d%m%Y%H%M%S')}"
         self.click(*self.GESTIONAR_TARIFAS)
         self.click(*self.CREAR_NUEVA_TARIFA)
-        self.driver.find_element(*self.NOMBRE_TARIFA).send_keys(self.tarifa_creada)
-        self.driver.find_element(*self.PRECIO_TARIFA).send_keys("3.33")
+        nombre=WebDriverWait(self.driver,15).until(lambda d:d.find_element(*self.NOMBRE_TARIFA))
+        nombre.send_keys(self.tarifa_creada)
+        precio=WebDriverWait(self.driver,15).until(lambda d:d.find_element(*self.PRECIO_TARIFA))
+        precio.send_keys("3.33")
         self.click(*self.GUARDAR)
         self.click(*self.CERRAR_TARIFA)
 
     def crear_zona(self):
         self.zona_creada=f"ZonaQA{datetime.now().strftime('%d%m%Y%H%M%S')}"
         self.click(*self.NUEVA_ZONA)
-        self.driver.find_element(*self.NOMBRE_ZONA).send_keys(self.zona_creada)
+        zona=WebDriverWait(self.driver,15).until(lambda d:d.find_element(*self.NOMBRE_ZONA))
+        zona.send_keys(self.zona_creada)
         self.click(AppiumBy.ANDROID_UIAUTOMATOR,f'new UiSelector().text("{self.tarifa_creada}")')
         self.driver.orientation="PORTRAIT"
         self.click(*self.CREAR_ZONA)

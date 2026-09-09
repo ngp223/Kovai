@@ -40,15 +40,14 @@ class PrintersPage:
     def scroll_pantalla_impresoras(self):
         while not self.driver.find_elements(*self.APLICAR_CAMBIOS):
             self.driver.swipe(800, 1200, 800, 500, 500)
+        time.sleep(1)
+
     def modificar_campo(self, locator, valor):
         self.cerrar_teclado()
         campo = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable(locator))
         campo.click()
-        time.sleep(1)
         campo.clear()
-        time.sleep(1)
         campo.send_keys(valor)
-        time.sleep(1)
         self.cerrar_teclado()
 
     def modificar_campos(self):
@@ -59,12 +58,8 @@ class PrintersPage:
         print(f"CAMPO GRACIAS MODIFICADO: {self.gracias_modificado}")
 
     def aplicar_cambios(self):
-        boton = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(self.APLICAR_CAMBIOS))
-        rect = boton.rect
-        x = rect["x"] + rect["width"] // 2
-        y = rect["y"] + rect["height"] // 2
-        print(f"BOTON APLICAR: x={x}, y={y}, width={rect['width']}, height={rect['height']}")
-        self.driver.tap([(x, y)])
+        boton = WebDriverWait(self.driver, 15).until(EC.element_to_be_clickable(self.APLICAR_CAMBIOS))
+        boton.click()
         time.sleep(5)
 
     def salir_y_volver_impresoras(self):
@@ -76,17 +71,14 @@ class PrintersPage:
         self.scroll_pantalla_impresoras()
 
     def comprobar_campos_modificados(self):
-        locator_tamus = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.tamus_modificado}")')
-        locator_gracias = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.gracias_modificado}")')
-
-        try:
-            WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(locator_tamus))
-            WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(locator_gracias))
-        except Exception:
-            raise AssertionError(f"Los campos no han quedado modificados correctamente: esperado '{self.tamus_modificado}' y '{self.gracias_modificado}'")
-
-        print(f"CAMPO TAMUS CONFIRMADO: {self.tamus_modificado}")
-        print(f"CAMPO GRACIAS CONFIRMADO: {self.gracias_modificado}")
+        campo_tamus = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(self.TAMUS_HOSTELERIA))
+        campo_gracias = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(self.GRACIAS_VISITA))
+        tamus_actual = campo_tamus.get_attribute("text")
+        gracias_actual = campo_gracias.get_attribute("text")
+        assert tamus_actual == self.tamus_modificado, f"Los campos no han quedado modificados correctamente: esperado '{self.tamus_modificado}' pero encontrado '{tamus_actual}'"
+        assert gracias_actual == self.gracias_modificado, f"Los campos no han quedado modificados correctamente: esperado '{self.gracias_modificado}' pero encontrado '{gracias_actual}'"
+        print(f"CAMPO TAMUS CONFIRMADO: {tamus_actual}")
+        print(f"CAMPO GRACIAS CONFIRMADO: {gracias_actual}")
 
     def restablecer_campos(self):
         self.modificar_campo(self.TAMUS_HOSTELERIA, self.tamus_original)
@@ -96,14 +88,11 @@ class PrintersPage:
         print(f"CAMPO GRACIAS RESTABLECIDO: {self.gracias_original}")
 
     def comprobar_campos_restablecidos(self):
-        locator_tamus = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.tamus_original}")')
-        locator_gracias = (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.gracias_original}")')
-
-        try:
-            WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(locator_tamus))
-            WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(locator_gracias))
-        except Exception:
-            raise AssertionError(f"Los campos no han sido restablecidos correctamente: esperado '{self.tamus_original}' y '{self.gracias_original}'")
-
-        print(f"CAMPO TAMUS RESTABLECIDO CONFIRMADO: {self.tamus_original}")
-        print(f"CAMPO GRACIAS RESTABLECIDO CONFIRMADO: {self.gracias_original}")
+        campo_tamus = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(self.TAMUS_HOSTELERIA))
+        campo_gracias = WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located(self.GRACIAS_VISITA))
+        tamus_actual = campo_tamus.get_attribute("text")
+        gracias_actual = campo_gracias.get_attribute("text")
+        assert tamus_actual == self.tamus_original, f"Los campos no han sido restablecidos correctamente: esperado '{self.tamus_original}' pero encontrado '{tamus_actual}'"
+        assert gracias_actual == self.gracias_original, f"Los campos no han sido restablecidos correctamente: esperado '{self.gracias_original}' pero encontrado '{gracias_actual}'"
+        print(f"CAMPO TAMUS RESTABLECIDO CONFIRMADO: {tamus_actual}")
+        print(f"CAMPO GRACIAS RESTABLECIDO CONFIRMADO: {gracias_actual}")
